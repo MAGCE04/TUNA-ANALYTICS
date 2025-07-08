@@ -7,9 +7,6 @@ import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
-// Metadata needs to be in a separate file for App Router when using 'use client'
-// This will be properly handled by Next.js
-
 // Navigation items
 const navItems = [
   { path: '/', label: '🏠 Overview', emoji: '🏠' },
@@ -47,10 +44,6 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <head>
-        <title>DeFi Tuna Analytics</title>
-        <meta name="description" content="Advanced analytics for DeFi Tuna protocol on Solana" />
-      </head>
       <body className={inter.className}>
         <div className="min-h-screen bg-background text-text flex flex-col">
           {/* Header */}
