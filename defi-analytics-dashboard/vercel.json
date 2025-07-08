@@ -1,8 +1,10 @@
 {
-  "buildCommand": "npm run static",
+  "version": 2,
+  "buildCommand": "npm run build",
   "outputDirectory": "out",
-  "framework": "nextjs",
-  "rewrites": [
-    { "source": "/(.*)", "destination": "/index.html" }
+  "framework": null,
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/404.html", "status": 404 }
   ]
 }

@@ -4,14 +4,14 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Ensure trailing slashes for better static file serving
-  trailingSlash: true,
   // Disable server components for static export
   experimental: {
     appDir: true,
   },
-  // Specify the base path if deploying to a subdirectory
-  // basePath: '/defi-analytics',
+  // Ensure trailing slashes for better static file serving
+  trailingSlash: true,
+  // Disable image optimization for static export
+  distDir: 'out',
 };
 
 module.exports = nextConfig;

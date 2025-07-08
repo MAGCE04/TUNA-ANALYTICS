@@ -1,2 +1,7 @@
-# This file helps Vercel identify the project root
-# Next.js version: 13.4.12
+{
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_BASE_PATH": ""
+    }
+  }
+}
