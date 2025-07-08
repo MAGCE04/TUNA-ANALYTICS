@@ -1,0 +1,21 @@
+{
+  "name": "defi-tuna-analytics",
+  "version": "1.0.0",
+  "description": "A simplified, static dashboard for DeFi analytics visualization",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve"
+  },
+  "keywords": [
+    "defi",
+    "analytics",
+    "dashboard",
+    "solana",
+    "static"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "serve": "^14.2.1"
+  }
+}
