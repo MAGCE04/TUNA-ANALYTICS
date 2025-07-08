@@ -11,6 +11,15 @@ import { formatCurrency, formatPercentage, formatSol, formatUsdc } from './lib/u
 import { TRACKED_WALLETS } from './lib/api';
 import Link from 'next/link';
 
+// Array of colors for charts
+const COLORS = [
+  '#00e4ff', // Aqua
+  '#9333ea', // Purple
+  '#00ffa3', // Neon green
+  '#ffb300', // Amber
+  '#ff4d6d', // Pink
+];
+
 export default function Home() {
   const {
     dailyRevenue,
@@ -81,7 +90,7 @@ export default function Home() {
   };
 
   // Calculate growth indicators
-  const revenueGrowth = metrics.dailyGrowthPercentage;
+  const revenueGrowth = metrics?.dailyGrowthPercentage || 0;
   const growthTrend = revenueGrowth >= 0 ? '📈' : '📉';
   const growthClass = revenueGrowth >= 0 ? 'text-success' : 'text-danger';
 
@@ -96,7 +105,7 @@ export default function Home() {
               <span className="ml-2">🐟</span>
             </h1>
             <p className="text-text-muted">
-              Last updated: {format(lastUpdated, 'MMM d, yyyy HH:mm')} • 
+              Last updated: {format(lastUpdated || new Date(), 'MMM d, yyyy HH:mm')} • 
               <span className="ml-1">Getting those big brain metrics for you</span>
             </p>
           </div>
@@ -130,7 +139,7 @@ export default function Home() {
             <h3 className="text-sm font-medium text-text-muted">Total Revenue</h3>
             <span className="text-primary text-xl">💰</span>
           </div>
-          <p className="text-3xl font-bold gradient-text">{formatCurrency(metrics.totalRevenue)}</p>
+          <p className="text-3xl font-bold gradient-text">{formatCurrency(metrics?.totalRevenue || 0)}</p>
           <div className="mt-2 text-text-muted text-sm">Lifetime earnings</div>
         </div>
         
@@ -139,7 +148,7 @@ export default function Home() {
             <h3 className="text-sm font-medium text-text-muted">Average Daily</h3>
             <span className="text-primary text-xl">📅</span>
           </div>
-          <p className="text-3xl font-bold">{formatCurrency(metrics.averageDailyRevenue)}</p>
+          <p className="text-3xl font-bold">{formatCurrency(metrics?.averageDailyRevenue || 0)}</p>
           <div className="mt-2 text-text-muted text-sm">Per day average</div>
         </div>
         
@@ -148,7 +157,7 @@ export default function Home() {
             <h3 className="text-sm font-medium text-text-muted">7-Day Average</h3>
             <span className="text-primary text-xl">📊</span>
           </div>
-          <p className="text-3xl font-bold">{formatCurrency(metrics.sevenDayAverage)}</p>
+          <p className="text-3xl font-bold">{formatCurrency(metrics?.sevenDayAverage || 0)}</p>
           <div className="mt-2 text-text-muted text-sm">Last week performance</div>
         </div>
         
@@ -207,7 +216,7 @@ export default function Home() {
             </div>
           </div>
           <div className="h-80">
-            {dailyRevenue.length > 0 ? (
+            {dailyRevenue && dailyRevenue.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart
                   data={dailyRevenue}
@@ -253,7 +262,7 @@ export default function Home() {
         <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '700ms' }}>
           <h2 className="text-xl font-bold mb-6">Revenue by Wallet</h2>
           <div className="h-80">
-            {walletRevenue.length > 0 ? (
+            {walletRevenue && walletRevenue.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -310,7 +319,7 @@ export default function Home() {
               </tr>
             </thead>
             <tbody>
-              {walletRevenue.map((wallet) => (
+              {walletRevenue && walletRevenue.length > 0 ? walletRevenue.map((wallet) => (
                 <tr key={wallet.wallet} className="border-b border-border hover:bg-card-hover transition-colors">
                   <td className="px-4 py-3">
                     {wallet.label || wallet.wallet.substring(0, 8) + '...'}
@@ -324,8 +333,7 @@ export default function Home() {
                     </span>
                   </td>
                 </tr>
-              ))}
-              {walletRevenue.length === 0 && (
+              )) : (
                 <tr>
                   <td colSpan={5} className="px-4 py-3 text-center text-text-muted">
                     No data available
@@ -339,12 +347,3 @@ export default function Home() {
     </div>
   );
 }
-
-// Array of colors for charts
-const COLORS = [
-  '#00e4ff', // Aqua
-  '#9333ea', // Purple
-  '#00ffa3', // Neon green
-  '#ffb300', // Amber
-  '#ff4d6d', // Pink
-];

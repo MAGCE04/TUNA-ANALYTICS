@@ -1,16 +1,14 @@
+'use client';
+
 import './globals.css';
-import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import Image from 'next/image';
 
 const inter = Inter({ subsets: ['latin'] });
 
-export const metadata: Metadata = {
-  title: 'DeFi Tuna Analytics',
-  description: 'Advanced analytics for DeFi Tuna protocol on Solana',
-};
+// Metadata needs to be in a separate file for App Router when using 'use client'
+// This will be properly handled by Next.js
 
 // Navigation items
 const navItems = [
@@ -23,6 +21,25 @@ const navItems = [
   { path: '/wallets', label: '👛 Wallets', emoji: '👛' },
 ];
 
+// Navigation link component with active state
+function NavLink({ href, label }: { href: string; label: string }) {
+  const pathname = usePathname();
+  const isActive = pathname === href;
+  
+  return (
+    <Link 
+      href={href}
+      className={`nav-link whitespace-nowrap transition-all ${
+        isActive 
+          ? 'nav-link-active' 
+          : 'text-text-muted hover:text-text hover:bg-card-hover'
+      }`}
+    >
+      {label}
+    </Link>
+  );
+}
+
 export default function RootLayout({
   children,
 }: {
@@ -30,6 +47,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <title>DeFi Tuna Analytics</title>
+        <meta name="description" content="Advanced analytics for DeFi Tuna protocol on Solana" />
+      </head>
       <body className={inter.className}>
         <div className="min-h-screen bg-background text-text flex flex-col">
           {/* Header */}
@@ -96,24 +117,5 @@ export default function RootLayout({
         </div>
       </body>
     </html>
-  );
-}
-
-// Navigation link component with active state
-function NavLink({ href, label }: { href: string; label: string }) {
-  const pathname = usePathname();
-  const isActive = pathname === href;
-  
-  return (
-    <Link 
-      href={href}
-      className={`nav-link whitespace-nowrap transition-all ${
-        isActive 
-          ? 'nav-link-active' 
-          : 'text-text-muted hover:text-text hover:bg-card-hover'
-      }`}
-    >
-      {label}
-    </Link>
   );
 }
