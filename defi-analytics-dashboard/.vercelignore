@@ -1,3 +1,5 @@
-# Vercel ignore file
 .git
 node_modules
+.next
+out
+README.md

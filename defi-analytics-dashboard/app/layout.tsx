@@ -7,12 +7,6 @@ import { usePathname } from 'next/navigation';
 
 const inter = Inter({ subsets: ['latin'] });
 
-// Metadata - This will be moved to a separate metadata.ts file
-export const metadata = {
-  title: 'DeFi Tuna Analytics',
-  description: 'Advanced analytics for DeFi Tuna protocol on Solana',
-};
-
 // Navigation items
 const navItems = [
   { path: '/', label: '🏠 Overview', emoji: '🏠' },

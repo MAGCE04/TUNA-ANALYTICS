@@ -1,11 +1,8 @@
 {
-  "version": 2,
-  "buildCommand": "npm run build",
-  "devCommand": "npm run dev",
-  "installCommand": "npm install",
-  "outputDirectory": ".next",
+  "buildCommand": "npm run static",
+  "outputDirectory": "out",
   "framework": "nextjs",
   "rewrites": [
-    { "source": "/(.*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
