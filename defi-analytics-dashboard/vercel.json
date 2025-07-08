@@ -1,1 +1,7 @@
-{\n  \"version\": 2,\n  \"buildCommand\": \"next build\",\n  \"devCommand\": \"next dev\",\n  \"outputDirectory\": \".next\",\n  \"framework\": \"nextjs\"\n}
+{
+  "version": 2,
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "outputDirectory": ".next",
+  "framework": "nextjs"
+}
