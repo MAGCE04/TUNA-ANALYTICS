@@ -1,0 +1,190 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Brand Colors */
+  --background: #0a0e17; /* Deep navy, almost black */
+  --card: #111827;
+  --card-hover: #1a2235;
+  --text: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #2d3748;
+  
+  /* Accent Colors */
+  --primary: #00e4ff; /* Aqua */
+  --primary-hover: #00c4ff;
+  --secondary: #9333ea; /* Purple */
+  --secondary-hover: #7e22ce;
+  --accent: #00ffa3; /* Neon green */
+  --accent-hover: #00e58f;
+  
+  /* Status Colors */
+  --success: #00ffa3;
+  --warning: #ffb300;
+  --danger: #ff4d6d;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-text;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-bold;
+  }
+}
+
+@layer components {
+  /* Card Styling */
+  .card {
+    @apply bg-card rounded-2xl border border-border p-5 shadow-lg transition-all duration-300 hover:shadow-xl;
+    background: linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.8));
+    backdrop-filter: blur(10px);
+  }
+  
+  .card-highlight {
+    @apply border-primary/30 shadow-primary/10;
+    background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.7));
+  }
+  
+  /* Button Styling */
+  .btn {
+    @apply px-4 py-2 rounded-xl font-medium transition-all duration-300 transform hover:scale-105;
+  }
+  
+  .btn-primary {
+    @apply bg-primary text-background hover:bg-primary-hover;
+    text-shadow: 0 0 10px rgba(0, 228, 255, 0.5);
+  }
+  
+  .btn-secondary {
+    @apply bg-secondary text-white hover:bg-secondary-hover;
+  }
+  
+  .btn-accent {
+    @apply bg-accent text-background hover:bg-accent-hover;
+  }
+  
+  .btn-outline {
+    @apply border border-border bg-transparent hover:bg-card-hover;
+  }
+  
+  /* Select Styling */
+  .select {
+    @apply bg-card border border-border rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary;
+  }
+  
+  /* Badge Styling */
+  .badge {
+    @apply px-2 py-1 rounded-lg text-xs font-medium;
+  }
+  
+  .badge-success {
+    @apply bg-success/20 text-success;
+  }
+  
+  .badge-warning {
+    @apply bg-warning/20 text-warning;
+  }
+  
+  .badge-danger {
+    @apply bg-danger/20 text-danger;
+  }
+  
+  /* Navbar Styling */
+  .nav-link {
+    @apply px-3 py-2 rounded-xl text-sm font-medium transition-all duration-300;
+  }
+  
+  .nav-link-active {
+    @apply bg-primary/10 text-primary;
+    text-shadow: 0 0 10px rgba(0, 228, 255, 0.3);
+  }
+  
+  /* Gradient Text */
+  .gradient-text {
+    @apply font-bold;
+    background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  
+  /* Tooltip Styling */
+  .tooltip-custom {
+    @apply bg-card border border-border rounded-xl p-3 shadow-lg;
+  }
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  /* Custom scrollbar for the rest of the app */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background: var(--card);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 4px;
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+  }
+  
+  /* Glow effects */
+  .glow {
+    box-shadow: 0 0 15px rgba(0, 228, 255, 0.3);
+  }
+  
+  .glow-text {
+    text-shadow: 0 0 10px rgba(0, 228, 255, 0.5);
+  }
+  
+  /* Animations */
+  .float {
+    animation: float 3s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+    100% {
+      transform: translateY(0px);
+    }
+  }
+  
+  .pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.7;
+    }
+  }
+}
