@@ -1,182 +1,70 @@
-/* Custom styles that extend Tailwind */
+/* styles.css */
 
-/* Base styles */
 body {
-  font-family: 'Inter', sans-serif;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #10141a;
+  color: #f0f0f0;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-weight: bold;
+header {
+  text-align: center;
+  padding: 2rem;
+  background-color: #1b1f26;
 }
 
-/* Card Styling */
+h1 {
+  margin: 0;
+  font-size: 2.5rem;
+}
+
+.subtitle {
+  margin-top: 0.5rem;
+  color: #aaa;
+}
+
+main {
+  padding: 2rem;
+  max-width: 1000px;
+  margin: auto;
+}
+
+.cards {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
 .card {
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.95), rgba(17, 24, 39, 0.8));
-  backdrop-filter: blur(10px);
+  background-color: #1e232c;
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 280px;
+  text-align: center;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: transform 0.2s ease;
 }
 
-.card-highlight {
-  background: linear-gradient(145deg, rgba(17, 24, 39, 0.9), rgba(17, 24, 39, 0.7));
+.card:hover {
+  transform: translateY(-5px);
 }
 
-/* Button Styling */
-.btn {
-  transition: all 0.3s;
-  transform: scale(1);
+.chart-section {
+  background-color: #1e232c;
+  padding: 1rem;
+  border-radius: 12px;
 }
 
-.btn:hover {
-  transform: scale(1.05);
+canvas {
+  width: 100% !important;
+  height: 300px !important;
 }
 
-.btn-primary {
-  text-shadow: 0 0 10px rgba(0, 228, 255, 0.5);
-}
-
-/* Gradient Text */
-.gradient-text {
-  font-weight: bold;
-  background: linear-gradient(90deg, #00e4ff 0%, #00ffa3 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
-}
-
-/* Tooltip Styling */
-.tooltip-custom {
-  background-color: #111827;
-  border: 1px solid #2d3748;
-  border-radius: 0.75rem;
-  padding: 0.75rem;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-
-/* Custom scrollbar for the rest of the app */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  background: #111827;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #2d3748;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #00e4ff;
-}
-
-/* Glow effects */
-.glow {
-  box-shadow: 0 0 15px rgba(0, 228, 255, 0.3);
-}
-
-.glow-text {
-  text-shadow: 0 0 10px rgba(0, 228, 255, 0.5);
-}
-
-/* Badge Styling */
-.badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.badge-success {
-  background-color: rgba(0, 255, 163, 0.2);
-  color: #00ffa3;
-}
-
-.badge-warning {
-  background-color: rgba(255, 179, 0, 0.2);
-  color: #ffb300;
-}
-
-.badge-danger {
-  background-color: rgba(255, 77, 109, 0.2);
-  color: #ff4d6d;
-}
-
-/* Navbar Styling */
-.nav-link {
-  padding: 0.5rem 0.75rem;
-  border-radius: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  transition: all 0.3s;
-}
-
-.nav-link-active {
-  background-color: rgba(0, 228, 255, 0.1);
-  color: #00e4ff;
-  text-shadow: 0 0 10px rgba(0, 228, 255, 0.3);
-}
-
-/* Animations */
-.pulse {
-  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-.float {
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-  100% {
-    transform: translateY(0px);
-  }
-}
-
-/* Loading animation */
-.animate-pulse-loading {
-  animation: pulse-loading 1.5s ease-in-out infinite;
-  background: linear-gradient(90deg, #00e4ff, #00ffa3, #00e4ff);
-  background-size: 200% 100%;
-}
-
-@keyframes pulse-loading {
-  0% {
-    background-position: 0% 50%;
-    width: 0%;
-  }
-  50% {
-    width: 100%;
-  }
-  100% {
-    background-position: 100% 50%;
-    width: 0%;
-  }
+footer {
+  text-align: center;
+  margin-top: 3rem;
+  color: #666;
+  padding-bottom: 1rem;
 }
