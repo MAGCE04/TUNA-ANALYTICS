@@ -220,6 +220,16 @@
       .last-updated {
         font-size: 0.8rem;
       }
+      .two-column {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+      }
+      @media (max-width: 1024px) {
+        .two-column {
+          grid-template-columns: 1fr;
+        }
+      }
     </style>
   </head>
 
@@ -235,28 +245,42 @@
       </div>
     </div>
 
-    <div class="stats">
-      <div class="card">
-        <h2>Total Revenue</h2>
-        <p id="total-revenue">Loading...</p>
+    <!-- Key Metrics Section -->
+    <div class="section">
+      <div class="section-header">
+        <h2>Key Protocol Metrics</h2>
       </div>
-      <div class="card">
-        <h2>Total Users</h2>
-        <p id="total-users">Loading...</p>
-      </div>
-      <div class="card">
-        <h2>Total Volume</h2>
-        <p id="total-volume">Loading...</p>
-      </div>
-      <div class="card">
-        <h2>Tracked Assets</h2>
-        <p id="tracked-assets">Loading...</p>
+      
+      <div class="stats">
+        <div class="card">
+          <h2>Total Revenue</h2>
+          <p id="total-revenue">Loading...</p>
+        </div>
+        <div class="card">
+          <h2>Active Users (30d)</h2>
+          <p id="active-users">Loading...</p>
+        </div>
+        <div class="card">
+          <h2>Total Transactions</h2>
+          <p id="total-transactions">Loading...</p>
+        </div>
+        <div class="card">
+          <h2>Tracked Assets</h2>
+          <p id="tracked-assets">Loading...</p>
+        </div>
       </div>
     </div>
 
+    <!-- Revenue Section -->
     <div class="section">
       <div class="section-header">
         <h2>Revenue Overview</h2>
+        <div class="time-filter">
+          <button class="time-btn active" data-chart="revenue" data-range="7d">7 Days</button>
+          <button class="time-btn" data-chart="revenue" data-range="1m">1 Month</button>
+          <button class="time-btn" data-chart="revenue" data-range="3m">3 Months</button>
+          <button class="time-btn" data-chart="revenue" data-range="1y">1 Year</button>
+        </div>
       </div>
 
       <div class="time-period-stats">
@@ -271,18 +295,6 @@
         <div class="time-stat">
           <div class="time-stat-label">All Time</div>
           <div class="time-stat-value" id="all-time-revenue">Loading...</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <h2>Revenue Metrics</h2>
-        <div class="time-filter">
-          <button class="time-btn active" data-range="7d">7 Days</button>
-          <button class="time-btn" data-range="1m">1 Month</button>
-          <button class="time-btn" data-range="3m">3 Months</button>
-          <button class="time-btn" data-range="1y">1 Year</button>
         </div>
       </div>
 
@@ -310,42 +322,58 @@
       </div>
     </div>
 
-    <div class="section">
-      <div class="section-header">
-        <h2>User Activity</h2>
-        <div class="time-filter">
-          <button class="time-btn active" data-chart="activity" data-range="7d">7 Days</button>
-          <button class="time-btn" data-chart="activity" data-range="1m">1 Month</button>
-          <button class="time-btn" data-chart="activity" data-range="3m">3 Months</button>
+    <!-- Two Column Layout for User Activity and Wallet Revenue -->
+    <div class="two-column">
+      <!-- User Activity Section -->
+      <div class="section">
+        <div class="section-header">
+          <h2>User Activity</h2>
+          <div class="time-filter">
+            <button class="time-btn active" data-chart="activity" data-range="7d">7 Days</button>
+            <button class="time-btn" data-chart="activity" data-range="1m">1 Month</button>
+            <button class="time-btn" data-chart="activity" data-range="3m">3 Months</button>
+          </div>
+        </div>
+
+        <div class="metrics">
+          <div class="metric">
+            <span class="metric-label">New Users (30d)</span>
+            <span class="metric-value" id="new-users">Loading...</span>
+          </div>
+          <div class="metric">
+            <span class="metric-label">Retention Rate</span>
+            <span class="metric-value" id="retention-rate">Loading...</span>
+          </div>
+        </div>
+
+        <div class="chart-container">
+          <canvas id="activityChart"></canvas>
         </div>
       </div>
 
-      <div class="chart-container">
-        <canvas id="activityChart"></canvas>
+      <!-- Wallet Revenue Section -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Top Wallets by Revenue</h2>
+        </div>
+        
+        <table class="wallet-table">
+          <thead>
+            <tr>
+              <th>Wallet</th>
+              <th>SOL</th>
+              <th>USDC</th>
+              <th>USD Value</th>
+              <th>Share</th>
+            </tr>
+          </thead>
+          <tbody id="wallet-table-body">
+            <tr>
+              <td colspan="5" style="text-align: center; color: #aaa;">Loading wallet data...</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <div class="section">
-      <div class="section-header">
-        <h2>Wallet Revenue</h2>
-      </div>
-      
-      <table class="wallet-table">
-        <thead>
-          <tr>
-            <th>Wallet</th>
-            <th>SOL</th>
-            <th>USDC</th>
-            <th>USD Value</th>
-            <th>Share</th>
-          </tr>
-        </thead>
-        <tbody id="wallet-table-body">
-          <tr>
-            <td colspan="5" style="text-align: center; color: #aaa;">Loading wallet data...</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
 
     <footer>
