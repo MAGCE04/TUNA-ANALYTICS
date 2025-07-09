@@ -17,6 +17,9 @@ const MOCK_DATA = {
     totalVolume: 318000,
     averageDailyRevenue: 4250,
     sevenDayAverage: 5750,
+    sevenDayRevenue: 42500,
+    oneMonthRevenue: 156000,
+    allTimeRevenue: 1250000,
     dailyGrowthPercentage: 5.2,
     dailyRevenue: [
       { date: '2023-11-01', totalUsdValue: 42000 },
@@ -36,7 +39,11 @@ const MOCK_DATA = {
   },
   users: {
     totalUsers: 421,
-    activeUsers: [12, 19, 3, 5, 2, 3, 7]
+    activeUsers: {
+      '7d': [12, 19, 3, 5, 2, 3, 7],
+      '1m': [5, 7, 10, 12, 15, 18, 22, 19, 17, 14, 12, 10, 8, 9, 11, 13, 15, 17, 19, 21, 23, 25, 22, 20, 18, 16, 14, 12, 10, 8],
+      '3m': [10, 15, 20, 25, 30, 25, 20, 15, 10, 15, 20, 25, 30, 25, 20, 15, 10, 15, 20, 25, 30, 25, 20, 15, 10, 15, 20, 25, 30, 25]
+    }
   },
   assets: {
     trackedAssets: 87
@@ -94,6 +101,91 @@ async function fetchData(endpoint) {
   }
 }
 
+// Generate dates for the last N days
+function getLastNDays(n) {
+  const dates = [];
+  for (let i = n - 1; i >= 0; i--) {
+    const date = new Date();
+    date.setDate(date.getDate() - i);
+    dates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+  }
+  return dates;
+}
+
+// Create or update a chart
+function createOrUpdateChart(chartId, labels, data, label, color = '#00ffcc') {
+  const ctx = document.getElementById(chartId).getContext('2d');
+  
+  // Clear any existing chart
+  if (window[chartId]) {
+    window[chartId].destroy();
+  }
+  
+  // Create new chart
+  window[chartId] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: label,
+        data: data,
+        borderColor: color,
+        backgroundColor: `rgba(${parseInt(color.slice(1, 3), 16)}, ${parseInt(color.slice(3, 5), 16)}, ${parseInt(color.slice(5, 7), 16)}, 0.2)`,
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: '#aaa',
+            callback: function(value) {
+              return label.includes('Revenue') ? 
+                '$' + value.toLocaleString() : 
+                value.toLocaleString();
+            }
+          }
+        },
+        x: {
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)'
+          },
+          ticks: {
+            color: '#aaa'
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: '#f0f0f0'
+          }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const value = context.raw;
+              return label.includes('Revenue') ? 
+                'Revenue: ' + formatCurrency(value) : 
+                'Users: ' + value;
+            }
+          }
+        }
+      }
+    }
+  });
+  
+  return window[chartId];
+}
+
 // Update dashboard with fetched data
 async function updateDashboard() {
   try {
@@ -105,11 +197,16 @@ async function updateDashboard() {
     const usersData = await fetchData(API_ENDPOINTS.users) || MOCK_DATA.users;
     const assetsData = await fetchData(API_ENDPOINTS.wallets) || MOCK_DATA.assets;
     
-    // Update UI with data
+    // Update main stats
+    document.getElementById("total-revenue").textContent = formatCurrency(revenueData.totalRevenue || 1250000);
     document.getElementById("total-users").textContent = usersData.totalUsers || "421";
     document.getElementById("total-volume").textContent = formatCurrency(revenueData.totalVolume || 318000);
     document.getElementById("tracked-assets").textContent = assetsData.trackedAssets || "87";
-    document.getElementById("total-revenue").textContent = formatCurrency(revenueData.totalRevenue || 1250000);
+    
+    // Update time period stats
+    document.getElementById("seven-day-revenue").textContent = formatCurrency(revenueData.sevenDayRevenue || 42500);
+    document.getElementById("one-month-revenue").textContent = formatCurrency(revenueData.oneMonthRevenue || 156000);
+    document.getElementById("all-time-revenue").textContent = formatCurrency(revenueData.allTimeRevenue || 1250000);
     
     // Update metrics
     document.getElementById('average-daily').textContent = formatCurrency(revenueData.averageDailyRevenue || 4250);
@@ -149,80 +246,26 @@ async function updateDashboard() {
       tableBody.appendChild(row);
     }
     
-    // Draw chart with data
-    const ctx = document.getElementById('activityChart').getContext('2d');
+    // Create Revenue Chart
+    const revenueLabels = revenueData.dailyRevenue ? 
+      revenueData.dailyRevenue.map(item => {
+        const date = new Date(item.date);
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      }) : 
+      getLastNDays(7);
     
-    // Clear any existing chart
-    if (window.activityChart) {
-      window.activityChart.destroy();
-    }
-    
-    // Prepare chart data
-    const labels = revenueData.dailyRevenue ? revenueData.dailyRevenue.map(item => {
-      const date = new Date(item.date);
-      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-    }) : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    
-    const values = revenueData.dailyRevenue ? 
+    const revenueValues = revenueData.dailyRevenue ? 
       revenueData.dailyRevenue.map(item => item.totalUsdValue) : 
-      usersData.activeUsers || [12, 19, 3, 5, 2, 3, 7];
+      [42000, 45000, 48000, 51000, 55000, 60000, 65000];
     
-    // Create new chart
-    window.activityChart = new Chart(ctx, {
-      type: 'line',
-      data: {
-        labels: labels,
-        datasets: [{
-          label: 'Daily Revenue',
-          data: values,
-          borderColor: '#00ffcc',
-          backgroundColor: 'rgba(0, 255, 204, 0.2)',
-          borderWidth: 2,
-          fill: true,
-          tension: 0.3
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        scales: {
-          y: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(255, 255, 255, 0.1)'
-            },
-            ticks: {
-              color: '#aaa',
-              callback: function(value) {
-                return '$' + value.toLocaleString();
-              }
-            }
-          },
-          x: {
-            grid: {
-              color: 'rgba(255, 255, 255, 0.1)'
-            },
-            ticks: {
-              color: '#aaa'
-            }
-          }
-        },
-        plugins: {
-          legend: {
-            labels: {
-              color: '#f0f0f0'
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                return 'Revenue: ' + formatCurrency(context.raw);
-              }
-            }
-          }
-        }
-      }
-    });
+    createOrUpdateChart('revenueChart', revenueLabels, revenueValues, 'Daily Revenue');
+    
+    // Create Activity Chart
+    const activityTimeRange = document.querySelector('.time-btn[data-chart="activity"].active')?.dataset.range || '7d';
+    const activityData = usersData.activeUsers?.[activityTimeRange] || MOCK_DATA.users.activeUsers['7d'];
+    const activityLabels = getLastNDays(activityData.length);
+    
+    createOrUpdateChart('activityChart', activityLabels, activityData, 'Active Users', '#4d94ff');
     
     // Update last updated time
     const now = new Date();
@@ -242,13 +285,20 @@ async function updateDashboard() {
     console.error('Error updating dashboard:', error);
     
     // Fallback to mock data if there's an error
+    document.getElementById("total-revenue").textContent = "$1,250,000";
     document.getElementById("total-users").textContent = "421";
     document.getElementById("total-volume").textContent = "$318,000";
     document.getElementById("tracked-assets").textContent = "87";
-    document.getElementById("total-revenue").textContent = "$1,250,000";
+    document.getElementById("seven-day-revenue").textContent = "$42,500";
+    document.getElementById("one-month-revenue").textContent = "$156,000";
+    document.getElementById("all-time-revenue").textContent = "$1,250,000";
     document.getElementById('average-daily').textContent = "$4,250";
     document.getElementById('seven-day-average').textContent = "$5,750";
     document.getElementById('daily-growth').textContent = "5.2%";
+    
+    // Create fallback charts
+    createOrUpdateChart('revenueChart', getLastNDays(7), [42000, 45000, 48000, 51000, 55000, 60000, 65000], 'Daily Revenue');
+    createOrUpdateChart('activityChart', getLastNDays(7), [12, 19, 3, 5, 2, 3, 7], 'Active Users', '#4d94ff');
     
   } finally {
     // Hide loading indicator
@@ -256,22 +306,46 @@ async function updateDashboard() {
   }
 }
 
-// Handle time filter buttons
+// Handle time filter buttons for revenue chart
 function setupTimeFilterButtons() {
-  const timeButtons = document.querySelectorAll('.time-btn');
-  timeButtons.forEach(button => {
+  // Revenue time filter buttons
+  const revenueTimeButtons = document.querySelectorAll('.time-filter .time-btn:not([data-chart])');
+  revenueTimeButtons.forEach(button => {
     button.addEventListener('click', function() {
-      // Remove active class from all buttons
-      timeButtons.forEach(btn => btn.classList.remove('active'));
+      // Remove active class from all buttons in this group
+      revenueTimeButtons.forEach(btn => btn.classList.remove('active'));
       
       // Add active class to clicked button
       this.classList.add('active');
       
       // In a real app, this would trigger data refresh with different time range
-      console.log(`Time range changed to: ${this.dataset.range}`);
+      console.log(`Revenue time range changed to: ${this.dataset.range}`);
       
       // For demo purposes, refresh the dashboard
       updateDashboard();
+    });
+  });
+  
+  // Activity chart time filter buttons
+  const activityTimeButtons = document.querySelectorAll('.time-filter .time-btn[data-chart="activity"]');
+  activityTimeButtons.forEach(button => {
+    button.addEventListener('click', function() {
+      // Remove active class from all buttons in this group
+      activityTimeButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Add active class to clicked button
+      this.classList.add('active');
+      
+      // Update the activity chart with the selected time range
+      const timeRange = this.dataset.range;
+      console.log(`Activity time range changed to: ${timeRange}`);
+      
+      // Get the appropriate data for the selected time range
+      const activityData = MOCK_DATA.users.activeUsers[timeRange];
+      const activityLabels = getLastNDays(activityData.length);
+      
+      // Update the chart
+      createOrUpdateChart('activityChart', activityLabels, activityData, 'Active Users', '#4d94ff');
     });
   });
 }

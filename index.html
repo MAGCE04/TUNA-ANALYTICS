@@ -8,6 +8,7 @@
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
       rel="stylesheet"
     />
+    <!-- Make sure Chart.js is loaded before our script -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
@@ -96,6 +97,7 @@
       .chart-container {
         height: 300px;
         margin-top: 1rem;
+        position: relative;
       }
       .metrics {
         display: grid;
@@ -180,6 +182,34 @@
       .hidden {
         display: none;
       }
+      .time-period-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+      .time-stat {
+        background: #252525;
+        border-radius: 8px;
+        padding: 1rem;
+      }
+      .time-stat-label {
+        font-size: 0.9rem;
+        color: #aaa;
+        margin-bottom: 0.5rem;
+      }
+      .time-stat-value {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+      .chart-placeholder {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        color: #aaa;
+        font-style: italic;
+      }
       footer {
         margin-top: 4rem;
         font-size: 0.9rem;
@@ -199,10 +229,17 @@
         <h1>TunaIQ Dashboard</h1>
         <p>Solana-based protocol insights</p>
       </div>
-      <div id="loading-indicator" class="loading hidden"></div>
+      <div>
+        <span class="last-updated">Last updated: <span id="last-updated">-</span></span>
+        <span id="loading-indicator" class="loading hidden"></span>
+      </div>
     </div>
 
     <div class="stats">
+      <div class="card">
+        <h2>Total Revenue</h2>
+        <p id="total-revenue">Loading...</p>
+      </div>
       <div class="card">
         <h2>Total Users</h2>
         <p id="total-users">Loading...</p>
@@ -215,9 +252,26 @@
         <h2>Tracked Assets</h2>
         <p id="tracked-assets">Loading...</p>
       </div>
-      <div class="card">
-        <h2>Total Revenue</h2>
-        <p id="total-revenue">Loading...</p>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>Revenue Overview</h2>
+      </div>
+
+      <div class="time-period-stats">
+        <div class="time-stat">
+          <div class="time-stat-label">7 Days</div>
+          <div class="time-stat-value" id="seven-day-revenue">Loading...</div>
+        </div>
+        <div class="time-stat">
+          <div class="time-stat-label">1 Month</div>
+          <div class="time-stat-value" id="one-month-revenue">Loading...</div>
+        </div>
+        <div class="time-stat">
+          <div class="time-stat-label">All Time</div>
+          <div class="time-stat-value" id="all-time-revenue">Loading...</div>
+        </div>
       </div>
     </div>
 
@@ -252,6 +306,21 @@
       </div>
 
       <div class="chart-container">
+        <canvas id="revenueChart"></canvas>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <h2>User Activity</h2>
+        <div class="time-filter">
+          <button class="time-btn active" data-chart="activity" data-range="7d">7 Days</button>
+          <button class="time-btn" data-chart="activity" data-range="1m">1 Month</button>
+          <button class="time-btn" data-chart="activity" data-range="3m">3 Months</button>
+        </div>
+      </div>
+
+      <div class="chart-container">
         <canvas id="activityChart"></canvas>
       </div>
     </div>
@@ -281,7 +350,6 @@
 
     <footer>
       <p>© <span id="current-year">2025</span> TunaIQ. All rights reserved.</p>
-      <p class="last-updated">Last updated: <span id="last-updated">-</span></p>
     </footer>
 
     <script src="script.js"></script>
