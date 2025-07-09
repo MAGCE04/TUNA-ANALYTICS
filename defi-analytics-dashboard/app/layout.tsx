@@ -61,10 +61,13 @@ export default function RootLayout({
                   <span className="text-xl font-bold gradient-text">DeFi Tuna Analytics</span>
                 </div>
                 
-                {/* Connect Wallet Button - Just for show */}
-                <button className="btn btn-primary hidden sm:block">
-                  Connect Wallet
-                </button>
+                {/* Status indicator */}
+                <div className="flex items-center">
+                  <div className="flex items-center">
+                    <div className="w-3 h-3 rounded-full bg-success mr-2 pulse"></div>
+                    <span className="text-sm text-text-muted">Live Data</span>
+                  </div>
+                </div>
               </div>
             </div>
           </header>

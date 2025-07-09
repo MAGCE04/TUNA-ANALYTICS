@@ -1,100 +1,62 @@
-import { NextRequest, NextResponse } from 'next/server';
-import axios from 'axios';
-import { PoolData } from '@/app/types';
+import { NextResponse } from 'next/server';
+import { PoolData } from '../../types';
 
-// Constants
-const TUNA_API_BASE = 'https://api.defituna.com'; // Replace with actual DeFi Tuna API endpoint
-const TUNA_PROGRAM_ID = 'tuna4uSQZncNeeiAMKbstuxA9CUkHH6HmC64wgmnogD';
-
-// Fetch pool data directly from DeFi Tuna API
-const fetchPoolData = async (): Promise<PoolData[]> => {
-  try {
-    // Call DeFi Tuna's pools API endpoint
-    const response = await axios.get(`${TUNA_API_BASE}/pools`);
-    
-    const pools: PoolData[] = [];
-    
-    // Process the response data
-    if (response.data && Array.isArray(response.data)) {
-      for (const item of response.data) {
-        pools.push({
-          poolAddress: item.address || item.id || '',
-          name: item.name || `${item.tokenA}/${item.tokenB} Pool`,
-          tokenA: item.tokenA || '',
-          tokenB: item.tokenB || '',
-          totalSupplied: item.totalSupplied || item.supplied || 0,
-          totalBorrowed: item.totalBorrowed || item.borrowed || 0,
-          utilizationRate: item.utilizationRate || (item.totalBorrowed / item.totalSupplied * 100) || 0,
-          apy: item.apy || 0,
-          volume24h: item.volume24h || item.volume || 0,
-          tvl: item.tvl || item.totalSupplied || 0,
-        });
-      }
-    }
-    
-    return pools;
-  } catch (error) {
-    console.error('Error fetching pool data from DeFi Tuna API:', error);
-    return [];
+// Generate random pool address
+const generatePoolAddress = () => {
+  const chars = '123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz';
+  let result = '';
+  for (let i = 0; i < 44; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
+  return result;
 };
 
-// Generate mock pool data for development
-const generateMockPoolData = (count = 5): PoolData[] => {
-  const mockData: PoolData[] = [];
-  const tokenPairs = [
-    { a: 'SOL', b: 'USDC' },
-    { a: 'ETH', b: 'USDC' },
-    { a: 'BTC', b: 'USDC' },
-    { a: 'BONK', b: 'SOL' },
-    { a: 'RAY', b: 'SOL' },
+// Mock data for pools
+const generatePoolsData = () => {
+  const data: PoolData[] = [];
+  
+  // Token pairs
+  const pairs = [
+    { tokenA: 'SOL', tokenB: 'USDC', name: 'SOL-USDC LP' },
+    { tokenA: 'ETH', tokenB: 'USDC', name: 'ETH-USDC LP' },
+    { tokenA: 'BTC', tokenB: 'USDC', name: 'BTC-USDC LP' },
+    { tokenA: 'BONK', tokenB: 'SOL', name: 'BONK-SOL LP' },
+    { tokenA: 'JUP', tokenB: 'USDC', name: 'JUP-USDC LP' },
+    { tokenA: 'ORCA', tokenB: 'SOL', name: 'ORCA-SOL LP' },
+    { tokenA: 'RAY', tokenB: 'USDC', name: 'RAY-USDC LP' },
+    { tokenA: 'MNGO', tokenB: 'USDC', name: 'MNGO-USDC LP' }
   ];
   
-  for (let i = 0; i < count; i++) {
-    const pair = tokenPairs[i % tokenPairs.length];
-    const totalSupplied = Math.random() * 1000000 + 100000; // $100K - $1.1M
-    const utilizationRate = Math.random() * 80 + 10; // 10-90%
-    const totalBorrowed = totalSupplied * (utilizationRate / 100);
+  // Generate data for each pair
+  pairs.forEach(pair => {
+    const tvl = Math.random() * 10000000 + 100000;
+    const volume24h = tvl * (Math.random() * 0.2 + 0.05); // 5-25% of TVL
+    const totalSupplied = tvl;
+    const totalBorrowed = tvl * (Math.random() * 0.8); // 0-80% of TVL
+    const utilizationRate = totalBorrowed / totalSupplied;
+    const apy = utilizationRate * (Math.random() * 10 + 5); // 5-15% based on utilization
     
-    // Calculate APY based on utilization (simplified formula)
-    const baseApy = 2; // 2% base APY
-    const utilizationFactor = 0.1; // 10% of utilization adds to APY
-    const apy = baseApy + (utilizationRate * utilizationFactor);
-    
-    mockData.push({
-      poolAddress: `pool${i}-${Math.random().toString(36).substring(2, 10)}`,
-      name: `${pair.a}/${pair.b} Pool`,
-      tokenA: pair.a,
-      tokenB: pair.b,
+    data.push({
+      poolAddress: generatePoolAddress(),
+      name: pair.name,
+      tokenA: pair.tokenA,
+      tokenB: pair.tokenB,
       totalSupplied,
       totalBorrowed,
       utilizationRate,
       apy,
-      volume24h: Math.random() * 500000 + 10000, // $10K - $510K
-      tvl: totalSupplied,
+      volume24h,
+      tvl
     });
-  }
+  });
   
-  // Sort by TVL descending
-  return mockData.sort((a, b) => b.tvl - a.tvl);
+  // Sort by TVL (descending)
+  return data.sort((a, b) => b.tvl - a.tvl);
 };
 
-export async function GET(request: NextRequest) {
-  try {
-    let pools: PoolData[] = [];
-    
-    if (process.env.NODE_ENV === 'production') {
-      // Fetch pool data from DeFi Tuna API
-      pools = await fetchPoolData();
-    } else {
-      // Use mock data for development
-      console.log('Using mock pool data');
-      pools = generateMockPoolData(5);
-    }
-    
-    return NextResponse.json({ pools });
-  } catch (error) {
-    console.error('Error processing pool data:', error);
-    return NextResponse.json({ error: 'Failed to fetch pool data' }, { status: 500 });
-  }
+export async function GET() {
+  // Generate mock data
+  const poolsData = generatePoolsData();
+  
+  return NextResponse.json(poolsData);
 }

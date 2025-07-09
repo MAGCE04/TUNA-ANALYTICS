@@ -1,111 +1,80 @@
-import { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { UserActivity, UserMetrics, TimeRange } from '../types';
-import { getDateRangeFromTimeRange } from '../lib/utils';
+import { filterDataByTimeRange, calculateGrowth } from '../lib/utils';
 
-export function useUserActivityData() {
-  const [userActivity, setUserActivity] = useState<UserActivity[]>([]);
+export const useUserActivityData = (timeRange: TimeRange) => {
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [activityData, setActivityData] = useState<UserActivity[]>([]);
   const [metrics, setMetrics] = useState<UserMetrics>({
     dau: 0,
     wau: 0,
     mau: 0,
     retentionRate: 0,
-    averageTransactionsPerUser: 0,
+    averageTransactionsPerUser: 0
   });
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<TimeRange>('month');
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
-  // Fetch data from our API
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Build query parameters
-      const { startDate, endDate } = getDateRangeFromTimeRange(timeRange);
-      const params = new URLSearchParams();
-      
-      if (startDate) {
-        params.append('startDate', startDate.toISOString());
-      }
-      if (endDate) {
-        params.append('endDate', endDate.toISOString());
-      }
-      
-      // Fetch data from our API
-      const response = await axios.get(`/api/users?${params.toString()}`);
-      
-      if (response.data.error) {
-        throw new Error(response.data.error);
-      }
-      
-      setUserActivity(response.data.activity || []);
-      setMetrics(response.data.metrics || {
-        dau: 0,
-        wau: 0,
-        mau: 0,
-        retentionRate: 0,
-        averageTransactionsPerUser: 0,
-      });
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError('Failed to fetch user activity data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Initial data fetch
+
   useEffect(() => {
-    fetchData();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/users');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch user activity data');
+        }
+        
+        const data = await response.json();
+        
+        // Convert to UserActivity format with timestamp
+        const formattedData = data.map((item: any) => ({
+          ...item,
+          timestamp: new Date(item.date).getTime()
+        }));
+        
+        setActivityData(formattedData);
+        
+        // Filter data based on time range
+        const filteredData = filterDataByTimeRange(formattedData, timeRange);
+        
+        if (filteredData.length > 0) {
+          // Calculate metrics
+          const totalUniqueUsers = filteredData.reduce((sum, item) => sum + item.uniqueUsers, 0);
+          const totalNewUsers = filteredData.reduce((sum, item) => sum + item.newUsers, 0);
+          const totalTransactions = filteredData.reduce((sum, item) => sum + item.totalTransactions, 0);
+          
+          const days = filteredData.length;
+          const dau = totalUniqueUsers / days;
+          
+          // Calculate retention rate
+          const returningUsers = filteredData.reduce((sum, item) => sum + item.returningUsers, 0);
+          const retentionRate = totalUniqueUsers > 0 ? (returningUsers / totalUniqueUsers) * 100 : 0;
+          
+          // Calculate average transactions per user
+          const avgTransactionsPerUser = totalUniqueUsers > 0 ? totalTransactions / totalUniqueUsers : 0;
+          
+          // Calculate previous period for growth comparison
+          const previousPeriodStart = new Date();
+          const daysInPeriod = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
+          previousPeriodStart.setDate(previousPeriodStart.getDate() - (daysInPeriod * 2));
+          
+          setMetrics({
+            dau,
+            wau: dau * 7, // Simplified calculation
+            mau: dau * 30, // Simplified calculation
+            retentionRate,
+            averageTransactionsPerUser
+          });
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Set up auto-refresh every 12 hours
-    const refreshInterval = setInterval(fetchData, 12 * 60 * 60 * 1000);
-    
-    return () => clearInterval(refreshInterval);
-  }, []);
-  
-  // Refetch data when time range changes
-  useEffect(() => {
     fetchData();
   }, [timeRange]);
   
-  // Calculate total unique users
-  const totalUniqueUsers = useMemo(() => {
-    return userActivity.reduce((sum, day) => sum + day.uniqueUsers, 0);
-  }, [userActivity]);
-  
-  // Calculate new user growth rate
-  const newUserGrowthRate = useMemo(() => {
-    if (userActivity.length < 2) return 0;
-    
-    const sortedActivity = [...userActivity].sort((a, b) => 
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
-    
-    const firstHalf = sortedActivity.slice(0, Math.floor(sortedActivity.length / 2));
-    const secondHalf = sortedActivity.slice(Math.floor(sortedActivity.length / 2));
-    
-    const firstHalfNewUsers = firstHalf.reduce((sum, day) => sum + day.newUsers, 0);
-    const secondHalfNewUsers = secondHalf.reduce((sum, day) => sum + day.newUsers, 0);
-    
-    if (firstHalfNewUsers === 0) return 0;
-    
-    return ((secondHalfNewUsers - firstHalfNewUsers) / firstHalfNewUsers) * 100;
-  }, [userActivity]);
-  
-  return {
-    userActivity,
-    metrics,
-    isLoading,
-    error,
-    timeRange,
-    lastUpdated,
-    setTimeRange,
-    totalUniqueUsers,
-    newUserGrowthRate,
-  };
-}
+  return { activityData, metrics, loading, error };
+};

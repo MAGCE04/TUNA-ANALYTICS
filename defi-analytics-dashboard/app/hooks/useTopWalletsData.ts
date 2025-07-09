@@ -1,62 +1,46 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { TopWallet } from '../types';
+import { TopWallet, TimeRange } from '../types';
+import { filterDataByTimeRange } from '../lib/utils';
 
-export function useTopWalletsData() {
-  const [topWallets, setTopWallets] = useState<TopWallet[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export const useTopWalletsData = (timeRange: TimeRange) => {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [limit, setLimit] = useState<number>(10);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
-  // Fetch data from our API
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Build query parameters
-      const params = new URLSearchParams();
-      params.append('limit', limit.toString());
-      
-      // Fetch data from our API
-      const response = await axios.get(`/api/wallets?${params.toString()}`);
-      
-      if (response.data.error) {
-        throw new Error(response.data.error);
+  const [topWallets, setTopWallets] = useState<TopWallet[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/wallets');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch top wallets data');
+        }
+        
+        const data = await response.json();
+        
+        // Filter data based on time range
+        const filteredData = filterDataByTimeRange(data, timeRange);
+        
+        // Sort by trade volume and take top 5
+        const sortedWallets = [...filteredData].sort((a, b) => b.tradeVolume - a.tradeVolume).slice(0, 5);
+        
+        // Format wallet addresses for display
+        const formattedWallets = sortedWallets.map(wallet => ({
+          ...wallet,
+          shortAddress: `${wallet.address.substring(0, 4)}...${wallet.address.substring(wallet.address.length - 4)}`
+        }));
+        
+        setTopWallets(formattedWallets);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
       }
-      
-      setTopWallets(response.data.topWallets || []);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError('Failed to fetch top wallet data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Initial data fetch
-  useEffect(() => {
-    fetchData();
+    };
     
-    // Set up auto-refresh every 12 hours
-    const refreshInterval = setInterval(fetchData, 12 * 60 * 60 * 1000);
-    
-    return () => clearInterval(refreshInterval);
-  }, []);
-  
-  // Refetch data when limit changes
-  useEffect(() => {
     fetchData();
-  }, [limit]);
+  }, [timeRange]);
   
-  return {
-    topWallets,
-    isLoading,
-    error,
-    limit,
-    lastUpdated,
-    setLimit,
-  };
-}
+  return { topWallets, loading, error };
+};

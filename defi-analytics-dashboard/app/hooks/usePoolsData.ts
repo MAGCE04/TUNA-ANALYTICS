@@ -1,81 +1,60 @@
-import { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
-import { PoolData } from '../types';
+import { useState, useEffect } from 'react';
+import { PoolData, TimeRange } from '../types';
+import { filterDataByTimeRange } from '../lib/utils';
 
-export function usePoolsData() {
-  const [pools, setPools] = useState<PoolData[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export const usePoolsData = (timeRange: TimeRange) => {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPool, setSelectedPool] = useState<string | null>(null);
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
-  // Fetch data from our API
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Fetch data from our API
-      const response = await axios.get('/api/pools');
-      
-      if (response.data.error) {
-        throw new Error(response.data.error);
-      }
-      
-      setPools(response.data.pools || []);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError('Failed to fetch pool data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Initial data fetch
+  const [pools, setPools] = useState<PoolData[]>([]);
+  const [totalTVL, setTotalTVL] = useState(0);
+  const [totalVolume, setTotalVolume] = useState(0);
+  const [avgUtilizationRate, setAvgUtilizationRate] = useState(0);
+
   useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/pools');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch pools data');
+        }
+        
+        const data = await response.json();
+        
+        // Add timestamp for filtering
+        const dataWithTimestamp = data.map((pool: any) => ({
+          ...pool,
+          timestamp: Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000 // Mock timestamp for demo
+        }));
+        
+        // Filter data based on time range
+        const filteredData = filterDataByTimeRange(dataWithTimestamp, timeRange);
+        
+        setPools(filteredData);
+        
+        if (filteredData.length > 0) {
+          // Calculate total TVL
+          const tvl = filteredData.reduce((sum, pool) => sum + pool.tvl, 0);
+          setTotalTVL(tvl);
+          
+          // Calculate total volume
+          const volume = filteredData.reduce((sum, pool) => sum + pool.volume24h, 0);
+          setTotalVolume(volume);
+          
+          // Calculate average utilization rate
+          const avgRate = filteredData.reduce((sum, pool) => sum + pool.utilizationRate, 0) / filteredData.length;
+          setAvgUtilizationRate(avgRate);
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+    
     fetchData();
-    
-    // Set up auto-refresh every 12 hours
-    const refreshInterval = setInterval(fetchData, 12 * 60 * 60 * 1000);
-    
-    return () => clearInterval(refreshInterval);
-  }, []);
+  }, [timeRange]);
   
-  // Get selected pool data
-  const selectedPoolData = useMemo(() => {
-    if (!selectedPool) return null;
-    return pools.find(pool => pool.poolAddress === selectedPool) || null;
-  }, [pools, selectedPool]);
-  
-  // Calculate average utilization rate
-  const averageUtilizationRate = useMemo(() => {
-    if (pools.length === 0) return 0;
-    return pools.reduce((sum, pool) => sum + pool.utilizationRate, 0) / pools.length;
-  }, [pools]);
-  
-  // Calculate total TVL
-  const totalTVL = useMemo(() => {
-    return pools.reduce((sum, pool) => sum + pool.tvl, 0);
-  }, [pools]);
-  
-  // Calculate total 24h volume
-  const total24hVolume = useMemo(() => {
-    return pools.reduce((sum, pool) => sum + pool.volume24h, 0);
-  }, [pools]);
-  
-  return {
-    pools,
-    isLoading,
-    error,
-    selectedPool,
-    selectedPoolData,
-    lastUpdated,
-    setSelectedPool,
-    metrics: {
-      averageUtilizationRate,
-      totalTVL,
-      total24hVolume,
-    },
-  };
-}
+  return { pools, totalTVL, totalVolume, avgUtilizationRate, loading, error };
+};

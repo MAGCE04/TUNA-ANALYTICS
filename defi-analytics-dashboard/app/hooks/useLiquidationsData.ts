@@ -1,113 +1,87 @@
-import { useState, useEffect, useMemo } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from 'react';
 import { LiquidationEvent, DailyLiquidation, TimeRange } from '../types';
-import { getDateRangeFromTimeRange } from '../lib/utils';
+import { filterDataByTimeRange } from '../lib/utils';
 
-export function useLiquidationsData() {
-  const [liquidationEvents, setLiquidationEvents] = useState<LiquidationEvent[]>([]);
-  const [dailyLiquidations, setDailyLiquidations] = useState<DailyLiquidation[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+export const useLiquidationsData = (timeRange: TimeRange) => {
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [timeRange, setTimeRange] = useState<TimeRange>('month');
-  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
-  
-  // Fetch data from our API
-  const fetchData = async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Build query parameters
-      const { startDate, endDate } = getDateRangeFromTimeRange(timeRange);
-      const params = new URLSearchParams();
-      
-      if (startDate) {
-        params.append('startDate', startDate.toISOString());
-      }
-      if (endDate) {
-        params.append('endDate', endDate.toISOString());
-      }
-      
-      // Fetch data from our API
-      const response = await axios.get(`/api/liquidations?${params.toString()}`);
-      
-      if (response.data.error) {
-        throw new Error(response.data.error);
-      }
-      
-      setLiquidationEvents(response.data.events || []);
-      setDailyLiquidations(response.data.dailyLiquidations || []);
-      setLastUpdated(new Date());
-    } catch (err) {
-      setError('Failed to fetch liquidation data');
-      console.error(err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-  
-  // Initial data fetch
+  const [liquidations, setLiquidations] = useState<LiquidationEvent[]>([]);
+  const [dailyLiquidations, setDailyLiquidations] = useState<DailyLiquidation[]>([]);
+  const [totalLiquidated, setTotalLiquidated] = useState(0);
+  const [avgLiquidationSize, setAvgLiquidationSize] = useState(0);
+
   useEffect(() => {
-    fetchData();
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch('/api/liquidations');
+        
+        if (!response.ok) {
+          throw new Error('Failed to fetch liquidations data');
+        }
+        
+        const data = await response.json();
+        
+        // Filter data based on time range
+        const filteredData = filterDataByTimeRange(data, timeRange);
+        
+        setLiquidations(filteredData);
+        
+        if (filteredData.length > 0) {
+          // Calculate total liquidated
+          const total = filteredData.reduce((sum, item) => sum + item.usdValue, 0);
+          setTotalLiquidated(total);
+          
+          // Calculate average liquidation size
+          setAvgLiquidationSize(total / filteredData.length);
+          
+          // Group by day
+          const dailyData: { [date: string]: DailyLiquidation } = {};
+          
+          filteredData.forEach(item => {
+            const date = new Date(item.timestamp).toISOString().split('T')[0];
+            
+            if (!dailyData[date]) {
+              dailyData[date] = {
+                date,
+                totalUsdValue: 0,
+                count: 0,
+                tokens: {}
+              };
+            }
+            
+            dailyData[date].totalUsdValue += item.usdValue;
+            dailyData[date].count += 1;
+            
+            if (!dailyData[date].tokens[item.tokenSymbol]) {
+              dailyData[date].tokens[item.tokenSymbol] = {
+                amount: 0,
+                usdValue: 0
+              };
+            }
+            
+            dailyData[date].tokens[item.tokenSymbol].amount += item.tokenAmount;
+            dailyData[date].tokens[item.tokenSymbol].usdValue += item.usdValue;
+          });
+          
+          setDailyLiquidations(Object.values(dailyData));
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
     
-    // Set up auto-refresh every 12 hours
-    const refreshInterval = setInterval(fetchData, 12 * 60 * 60 * 1000);
-    
-    return () => clearInterval(refreshInterval);
-  }, []);
-  
-  // Refetch data when time range changes
-  useEffect(() => {
     fetchData();
   }, [timeRange]);
   
-  // Calculate total liquidation volume
-  const totalLiquidationVolume = useMemo(() => {
-    return dailyLiquidations.reduce((sum, day) => sum + day.totalUsdValue, 0);
-  }, [dailyLiquidations]);
-  
-  // Calculate average daily liquidation volume
-  const averageDailyVolume = useMemo(() => {
-    return dailyLiquidations.length > 0
-      ? totalLiquidationVolume / dailyLiquidations.length
-      : 0;
-  }, [dailyLiquidations, totalLiquidationVolume]);
-  
-  // Calculate most liquidated token
-  const mostLiquidatedToken = useMemo(() => {
-    const tokenVolumes: Record<string, number> = {};
-    
-    dailyLiquidations.forEach(day => {
-      Object.entries(day.tokens).forEach(([token, data]) => {
-        tokenVolumes[token] = (tokenVolumes[token] || 0) + data.usdValue;
-      });
-    });
-    
-    let maxToken = '';
-    let maxVolume = 0;
-    
-    Object.entries(tokenVolumes).forEach(([token, volume]) => {
-      if (volume > maxVolume) {
-        maxToken = token;
-        maxVolume = volume;
-      }
-    });
-    
-    return { token: maxToken, volume: maxVolume };
-  }, [dailyLiquidations]);
-  
-  return {
-    liquidationEvents,
-    dailyLiquidations,
-    isLoading,
-    error,
-    timeRange,
-    lastUpdated,
-    setTimeRange,
-    metrics: {
-      totalLiquidationVolume,
-      averageDailyVolume,
-      mostLiquidatedToken,
-    },
+  return { 
+    liquidations, 
+    dailyLiquidations, 
+    totalLiquidated, 
+    avgLiquidationSize, 
+    loading, 
+    error 
   };
-}
+};
