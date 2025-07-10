@@ -4,13 +4,13 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Disable server components for static export
+  // Enable app directory
   experimental: {
     appDir: true,
   },
   // Ensure trailing slashes for better static file serving
   trailingSlash: true,
-  // Disable image optimization for static export
+  // Set output directory
   distDir: 'out',
 };
 
