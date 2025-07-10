@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useRevenueData } from './hooks/useRevenueData';
 import { formatCurrency, formatPercentage, formatSol, formatUsdc } from './lib/utils';
-import { TRACKED_WALLETS } from './lib/api';
 import Link from 'next/link';
 import TimeRangeSelector from './components/TimeRangeSelector';
 import { useUserActivityData } from './hooks/useUserActivityData';
