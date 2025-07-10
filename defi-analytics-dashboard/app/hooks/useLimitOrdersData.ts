@@ -25,10 +25,11 @@ export const useLimitOrdersData = (timeRange: TimeRange) => {
           throw new Error('Failed to fetch limit orders data');
         }
         
-        const data = await response.json();
+        const data: LimitOrder[] = await response.json();
         
         // Filter data based on time range
-        const filteredData = filterDataByTimeRange(data, timeRange);
+        // Ensure we're working with complete LimitOrder objects
+        const filteredData = filterDataByTimeRange<LimitOrder>(data, timeRange);
         
         setOrders(filteredData);
         
