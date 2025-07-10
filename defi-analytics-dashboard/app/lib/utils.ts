@@ -44,3 +44,45 @@ export const formatNumber = (value: number, decimals = 2): string => {
   }
   return value.toFixed(decimals);
 };
+
+/**
+ * Formats a currency value for display
+ * @param value Number to format as currency
+ * @param currency Currency symbol
+ * @returns Formatted currency string
+ */
+export const formatCurrency = (value: number, currency = '$'): string => {
+  if (value >= 1_000_000) {
+    return `${currency}${(value / 1_000_000).toFixed(2)}M`;
+  } else if (value >= 1_000) {
+    return `${currency}${(value / 1_000).toFixed(2)}K`;
+  }
+  return `${currency}${value.toFixed(2)}`;
+};
+
+/**
+ * Formats a percentage value for display
+ * @param value Number to format as percentage
+ * @returns Formatted percentage string
+ */
+export const formatPercentage = (value: number): string => {
+  return `${value.toFixed(2)}%`;
+};
+
+/**
+ * Formats a SOL value for display
+ * @param value Number of SOL
+ * @returns Formatted SOL string
+ */
+export const formatSol = (value: number): string => {
+  return `◎${value.toFixed(2)}`;
+};
+
+/**
+ * Formats a USDC value for display
+ * @param value Number of USDC
+ * @returns Formatted USDC string
+ */
+export const formatUsdc = (value: number): string => {
+  return `${value.toFixed(2)} USDC`;
+};

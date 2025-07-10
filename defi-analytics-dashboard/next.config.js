@@ -1,17 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
-  images: {
-    unoptimized: true,
-  },
-  // Enable app directory
+  reactStrictMode: true,
+  swcMinify: true,
   experimental: {
     appDir: true,
   },
-  // Ensure trailing slashes for better static file serving
-  trailingSlash: true,
-  // Set output directory
-  distDir: 'out',
+  // Only use these settings if you need a static export
+  // output: 'export',
+  // images: {
+  //   unoptimized: true,
+  // },
+  // distDir: 'out',
 };
 
 module.exports = nextConfig;

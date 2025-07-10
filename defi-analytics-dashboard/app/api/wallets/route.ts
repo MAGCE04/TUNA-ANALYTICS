@@ -25,14 +25,14 @@ const generateTopWalletsData = () => {
     const tokens = ['SOL', 'USDC', 'ETH', 'BTC', 'BONK'];
     const favoriteToken = tokens[Math.floor(Math.random() * tokens.length)];
     
+    const address = generateWalletAddress();
     data.push({
-      address: generateWalletAddress(),
-      shortAddress: '', // Will be formatted by the client
+      address,
+      shortAddress: `${address.substring(0, 4)}...${address.substring(address.length - 4)}`,
       tradeVolume,
       tradeCount,
       lastActive,
-      favoriteToken,
-      timestamp: lastActive
+      favoriteToken
     });
   }
   
