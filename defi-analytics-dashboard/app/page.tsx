@@ -118,9 +118,6 @@ export default function Home() {
   const growthTrend = revenueGrowth >= 0 ? '📈' : '📉';
   const growthClass = revenueGrowth >= 0 ? 'text-success' : 'text-danger';
 
-  // Format recent activity data
-  const recentActivity = [...(orders || [])].sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
-
   // Calculate additional metrics
   const newUsers = Math.round((userMetrics?.dau || 0) * 0.15);
   const dailyAvgRevenue = (revenueMetrics?.totalRevenue || 0) / 30;
@@ -129,7 +126,7 @@ export default function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Hero Section */}
+      {/* Header Section */}
       <div className={`transition-all duration-1000 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
           <div>
@@ -139,7 +136,7 @@ export default function Home() {
             </h1>
             <p className="text-text-muted">
               Last updated: {format(new Date(), 'MMM d, yyyy HH:mm')} • 
-              <span className="ml-1">Getting those big brain metrics for you</span>
+              <span className="ml-1">Protocol analytics at a glance</span>
             </p>
           </div>
           
@@ -152,51 +149,11 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Top Stats Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '100ms' }}>
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Active Users</h3>
-            <span className="text-primary text-xl">👥</span>
-          </div>
-          <p className="text-3xl font-bold gradient-text">{userMetrics?.dau.toLocaleString() || 0}</p>
-          <div className="mt-2 text-text-muted text-sm">Daily active users</div>
-        </div>
-        
-        <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '200ms' }}>
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Volume</h3>
-            <span className="text-primary text-xl">📊</span>
-          </div>
-          <p className="text-3xl font-bold">{formatCurrency(totalVolume || 0)}</p>
-          <div className="mt-2 text-text-muted text-sm">Trading volume</div>
-        </div>
-        
-        <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '300ms' }}>
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Tracked Assets</h3>
-            <span className="text-primary text-xl">💎</span>
-          </div>
-          <p className="text-3xl font-bold">{pools?.length || 0}</p>
-          <div className="mt-2 text-text-muted text-sm">Monitored tokens</div>
-        </div>
-        
-        <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '400ms' }}>
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Total Revenue</h3>
-            <span className="text-primary text-xl">💰</span>
-          </div>
-          <p className="text-3xl font-bold">{formatCurrency(revenueMetrics?.totalRevenue || 0)}</p>
-          <div className="mt-2 text-text-muted text-sm flex items-center">
-            <span className={`mr-1 ${growthClass}`}>{formatPercentage(Math.abs(revenueGrowth))}</span>
-            <span className={growthClass}>{revenueGrowth >= 0 ? 'up' : 'down'}</span>
-          </div>
-        </div>
-      </div>
-
       {/* SECTION 1: USER OVERVIEW */}
       <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">User Overview</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <span className="text-primary text-xl mr-2">👥</span> User Overview
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="card">
             <h3 className="text-lg font-bold mb-4">User Metrics</h3>
@@ -217,11 +174,15 @@ export default function Home() {
                 <span className="text-text-muted">Avg. Transactions per User</span>
                 <span className="font-bold">{userMetrics?.averageTransactionsPerUser.toFixed(1) || 0}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted">User Growth Rate</span>
+                <span className="font-bold">{formatPercentage(userMetrics?.growthRate || 0)}</span>
+              </div>
             </div>
           </div>
           
           <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-bold mb-4">User Activity Trend</h3>
+            <h3 className="text-lg font-bold mb-4">User Growth Trend</h3>
             <div className="h-64">
               <UserGrowthChart />
             </div>
@@ -231,7 +192,9 @@ export default function Home() {
 
       {/* SECTION 2: REVENUE OVERVIEW */}
       <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Revenue Overview</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <span className="text-primary text-xl mr-2">💰</span> Revenue Overview
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="card">
             <h3 className="text-lg font-bold mb-4">Revenue Metrics</h3>
@@ -254,6 +217,12 @@ export default function Home() {
                   {growthTrend} {formatPercentage(Math.abs(revenueGrowth))}
                 </span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted">Revenue per User</span>
+                <span className="font-bold">
+                  {formatCurrency((revenueMetrics?.totalRevenue || 0) / (userMetrics?.dau || 1))}
+                </span>
+              </div>
             </div>
           </div>
           
@@ -268,7 +237,9 @@ export default function Home() {
 
       {/* SECTION 3: ACTIVITY OVERVIEW */}
       <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Activity Overview</h2>
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <span className="text-primary text-xl mr-2">📊</span> Activity Overview
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="card">
             <h3 className="text-lg font-bold mb-4">Transaction Metrics</h3>
@@ -289,6 +260,12 @@ export default function Home() {
                 <span className="text-text-muted">Avg. Transaction Size</span>
                 <span className="font-bold">{formatCurrency(orderStats?.averageOrderSize || 0)}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted">Success Rate</span>
+                <span className="font-bold">
+                  {formatPercentage((orderStats?.filledOrders || 0) / (orderStats?.totalOrders || 1))}
+                </span>
+              </div>
             </div>
           </div>
           
@@ -302,8 +279,10 @@ export default function Home() {
       </div>
 
       {/* SECTION 4: LIQUIDITY OVERVIEW */}
-      <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Liquidity Overview</h2>
+      <div className="mb-10">
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <span className="text-primary text-xl mr-2">💎</span> Liquidity Overview
+        </h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="card">
             <h3 className="text-lg font-bold mb-4">Liquidity Metrics</h3>
@@ -324,6 +303,12 @@ export default function Home() {
                 <span className="text-text-muted">Total Volume (30d)</span>
                 <span className="font-bold">{formatCurrency(totalVolume || 0)}</span>
               </div>
+              <div className="flex justify-between items-center">
+                <span className="text-text-muted">Liquidity Depth</span>
+                <span className="font-bold">
+                  {formatPercentage((totalTVL || 0) / (totalVolume || 1) * 100)}
+                </span>
+              </div>
             </div>
           </div>
           
@@ -336,55 +321,31 @@ export default function Home() {
         </div>
       </div>
 
-      {/* SECTION 5: RECENT ACTIVITY */}
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold text-white mb-6">Recent Activity</h2>
-        <div className="card">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold">Latest Transactions</h3>
-            <Link href="/orders" className="text-primary text-sm hover:underline">
-              View all activity →
-            </Link>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="px-4 py-3 text-left">Time</th>
-                  <th className="px-4 py-3 text-left">Wallet</th>
-                  <th className="px-4 py-3 text-left">Action</th>
-                  <th className="px-4 py-3 text-left">Asset</th>
-                  <th className="px-4 py-3 text-right">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {recentActivity && recentActivity.length > 0 ? recentActivity.map((activity, index) => (
-                  <tr key={index} className="border-b border-border hover:bg-card-hover transition-colors">
-                    <td className="px-4 py-3 text-sm">
-                      {format(new Date(activity.timestamp), 'MMM d, HH:mm')}
-                    </td>
-                    <td className="px-4 py-3 font-mono text-sm">
-                      {activity.owner.substring(0, 6)}...{activity.owner.substring(activity.owner.length - 4)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`badge ${activity.status === 'filled' ? 'badge-success' : activity.status === 'canceled' ? 'badge-danger' : 'badge-warning'}`}>
-                        {activity.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3">{activity.pair}</td>
-                    <td className="px-4 py-3 text-right font-mono">{formatCurrency(activity.usdValue)}</td>
-                  </tr>
-                )) : (
-                  <tr>
-                    <td colSpan={5} className="px-4 py-3 text-center text-text-muted">
-                      No recent activity
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+      {/* Additional Resources */}
+      <div className="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Link href="/users" className="card hover:bg-card-hover transition-colors p-4 flex flex-col items-center justify-center text-center">
+          <span className="text-2xl mb-2">👥</span>
+          <h3 className="font-bold">User Analytics</h3>
+          <p className="text-sm text-text-muted mt-1">Detailed user metrics and growth</p>
+        </Link>
+        
+        <Link href="/revenue" className="card hover:bg-card-hover transition-colors p-4 flex flex-col items-center justify-center text-center">
+          <span className="text-2xl mb-2">💰</span>
+          <h3 className="font-bold">Revenue Analytics</h3>
+          <p className="text-sm text-text-muted mt-1">Revenue streams and projections</p>
+        </Link>
+        
+        <Link href="/orders" className="card hover:bg-card-hover transition-colors p-4 flex flex-col items-center justify-center text-center">
+          <span className="text-2xl mb-2">📊</span>
+          <h3 className="font-bold">Transaction History</h3>
+          <p className="text-sm text-text-muted mt-1">Detailed transaction logs</p>
+        </Link>
+        
+        <Link href="/pools" className="card hover:bg-card-hover transition-colors p-4 flex flex-col items-center justify-center text-center">
+          <span className="text-2xl mb-2">💎</span>
+          <h3 className="font-bold">Liquidity Pools</h3>
+          <p className="text-sm text-text-muted mt-1">Pool performance and metrics</p>
+        </Link>
       </div>
     </div>
   );
