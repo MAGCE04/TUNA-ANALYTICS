@@ -3,7 +3,7 @@
 import { useRevenueData } from '../hooks/useRevenueData';
 import { format } from 'date-fns';
 import { formatCurrency, formatPercentage } from '../lib/utils';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { RevenueChart } from '../components/charts/RevenueChart';
 
 export default function RevenuePage() {
   const {
@@ -48,23 +48,6 @@ export default function RevenuePage() {
     );
   }
 
-  // Custom tooltip for charts
-  const CustomTooltip = ({ active, payload, label, formatter }: any) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="tooltip-custom">
-          <p className="text-sm font-medium mb-1">{format(new Date(label), 'MMM d, yyyy')}</p>
-          {payload.map((entry: any, index: number) => (
-            <p key={`item-${index}`} style={{ color: entry.color }} className="text-sm">
-              {entry.name}: {formatter ? formatter(entry.value) : entry.value}
-            </p>
-          ))}
-        </div>
-      );
-    }
-    return null;
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
@@ -96,37 +79,7 @@ export default function RevenuePage() {
           <h2 className="text-xl font-bold">Revenue Over Time</h2>
         </div>
         <div className="h-96">
-          {dailyRevenue && dailyRevenue.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart
-                data={dailyRevenue}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="rgba(45, 55, 72, 0.3)" />
-                <XAxis 
-                  dataKey="date" 
-                  stroke="#94a3b8"
-                  tickFormatter={(date) => format(new Date(date), 'MMM d')}
-                />
-                <YAxis 
-                  stroke="#94a3b8"
-                  tickFormatter={(value) => `$${value.toLocaleString()}`}
-                />
-                <Tooltip content={<CustomTooltip formatter={(value: number) => `$${value.toLocaleString()}`} />} />
-                <Line 
-                  type="monotone" 
-                  dataKey="totalUsdValue" 
-                  stroke="var(--primary)" 
-                  activeDot={{ r: 8, strokeWidth: 0, fill: 'var(--primary)' }} 
-                  name="Revenue"
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              <p className="text-text-muted">No data available for the selected time range</p>
-            </div>
-          )}
+          <RevenueChart />
         </div>
       </div>
 

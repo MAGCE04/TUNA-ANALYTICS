@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { 
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, Legend, PieChart, Pie, Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Legend, PieChart, Pie, Cell
 } from 'recharts';
 import { useUserActivityData } from '../hooks/useUserActivityData';
 import { formatPercentage } from '../lib/utils';
+import { UserGrowthChart } from '../components/charts/UserGrowthChart';
 
 export default function UsersPage() {
   const {
@@ -104,40 +105,7 @@ export default function UsersPage() {
         <div className="card lg:col-span-2">
           <h2 className="text-lg font-bold mb-4">Daily Active Users</h2>
           <div className="h-80">
-            {userActivity.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={userActivity}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis 
-                    dataKey="date" 
-                    stroke="#94a3b8"
-                    tickFormatter={(date) => format(new Date(date), 'MMM d')}
-                  />
-                  <YAxis 
-                    stroke="#94a3b8"
-                  />
-                  <Tooltip 
-                    formatter={(value: number) => [value.toLocaleString(), 'Users']}
-                    labelFormatter={(label) => format(new Date(label), 'MMM d, yyyy')}
-                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155' }}
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="uniqueUsers" 
-                    stroke="#6366f1" 
-                    activeDot={{ r: 8 }} 
-                    name="Unique Users"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-text-muted">No data available for the selected time range</p>
-              </div>
-            )}
+            <UserGrowthChart />
           </div>
         </div>
 

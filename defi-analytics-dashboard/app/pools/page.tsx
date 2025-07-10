@@ -8,6 +8,7 @@ import {
 } from 'recharts';
 import { usePoolsData } from '../hooks/usePoolsData';
 import { formatCurrency, formatPercentage } from '../lib/utils';
+import { LiquidityChart } from '../components/charts/LiquidityChart';
 
 export default function PoolsPage() {
   const {
@@ -226,40 +227,14 @@ export default function PoolsPage() {
         {/* TVL Distribution */}
         <div className={`card transition-all duration-700 transform ${animate ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`} style={{ transitionDelay: '600ms' }}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold">TVL Distribution</h2>
+            <h2 className="text-xl font-bold">Asset Distribution</h2>
             <div className="flex items-center text-text-muted text-sm">
               <span className="inline-block w-3 h-3 bg-primary rounded-full mr-1"></span>
               <span>By Pool</span>
             </div>
           </div>
           <div className="h-80">
-            {pools.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={tvlData}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    outerRadius={80}
-                    fill="#8884d8"
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
-                  >
-                    {tvlData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip content={<CustomTooltip formatter={(value: number) => formatCurrency(value)} />} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-text-muted">No pool data available</p>
-              </div>
-            )}
+            <LiquidityChart />
           </div>
         </div>
 

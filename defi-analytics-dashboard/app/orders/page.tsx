@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
 import { 
-  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
-  BarChart, Bar, XAxis, YAxis, CartesianGrid
+  PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend
 } from 'recharts';
 import { useLimitOrdersData } from '../hooks/useLimitOrdersData';
 import { formatCurrency, formatPercentage } from '../lib/utils';
+import { ActivityChart } from '../components/charts/ActivityChart';
 
 export default function OrdersPage() {
   const {
@@ -58,12 +58,6 @@ export default function OrdersPage() {
     { name: 'Filled', value: stats.filledOrders },
     { name: 'Canceled', value: stats.canceledOrders },
   ];
-
-  // Prepare data for pair distribution chart
-  const pairData = Object.entries(ordersByPair).map(([pair, orders]) => ({
-    name: pair,
-    value: orders.length,
-  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -193,31 +187,7 @@ export default function OrdersPage() {
         <div className="card">
           <h2 className="text-lg font-bold mb-4">Trading Pair Distribution</h2>
           <div className="h-80">
-            {pairData.length > 0 ? (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={pairData}
-                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                  <XAxis dataKey="name" stroke="#94a3b8" />
-                  <YAxis stroke="#94a3b8" />
-                  <Tooltip 
-                    formatter={(value: number) => [value.toLocaleString(), 'Orders']}
-                    contentStyle={{ backgroundColor: '#1e293b', borderColor: '#334155' }}
-                  />
-                  <Bar dataKey="value" name="Orders">
-                    {pairData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <p className="text-text-muted">No data available for the selected filters</p>
-              </div>
-            )}
+            <ActivityChart />
           </div>
         </div>
       </div>
