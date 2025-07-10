@@ -20,10 +20,11 @@ export const useLiquidationsData = (timeRange: TimeRange) => {
           throw new Error('Failed to fetch liquidations data');
         }
         
-        const data = await response.json();
+        const data: LiquidationEvent[] = await response.json();
         
         // Filter data based on time range
-        const filteredData = filterDataByTimeRange(data, timeRange);
+        // Ensure we're working with complete LiquidationEvent objects
+        const filteredData = filterDataByTimeRange<LiquidationEvent>(data, timeRange);
         
         setLiquidations(filteredData);
         
