@@ -5,12 +5,26 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
-  // Only use these settings if you need a static export
-  // output: 'export',
-  // images: {
-  //   unoptimized: true,
-  // },
-  // distDir: 'out',
+  // Ensure we're not using stale cache
+  generateEtags: false,
+  // Disable image optimization to prevent caching issues
+  images: {
+    unoptimized: true,
+  },
+  // Add headers to prevent caching
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, max-age=0',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

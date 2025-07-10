@@ -1,7 +1,3 @@
 {
-  "build": {
-    "env": {
-      "NEXT_PUBLIC_BASE_PATH": ""
-    }
-  }
+  "cache": false
 }

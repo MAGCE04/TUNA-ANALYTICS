@@ -172,7 +172,7 @@ export default function Home() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">Avg. Transactions per User</span>
-                <span className="font-bold">{userMetrics?.averageTransactionsPerUser.toFixed(1) || 0}</span>
+                <span className="font-bold">{userMetrics?.averageTransactionsPerUser?.toFixed(1) || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">User Growth Rate</span>
@@ -246,7 +246,7 @@ export default function Home() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">Total Transactions</span>
-                <span className="font-bold">{orderStats?.totalOrders.toLocaleString() || 0}</span>
+                <span className="font-bold">{orderStats?.totalOrders?.toLocaleString() || 0}</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-text-muted">Trading Events</span>

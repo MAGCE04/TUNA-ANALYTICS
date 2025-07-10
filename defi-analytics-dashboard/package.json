@@ -4,9 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "rm -rf .next && next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next node_modules/.cache",
+    "rebuild": "npm run clean && npm run build"
   },
   "dependencies": {
     "@solana/web3.js": "^1.78.0",
@@ -36,5 +38,8 @@
   "devDependencies": {
     "@types/node-cron": "^3.0.8",
     "@types/react-datepicker": "^4.11.2"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
