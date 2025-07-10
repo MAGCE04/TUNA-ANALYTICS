@@ -1,3 +1,10 @@
 src/
 index.html
 vite.config.js
+.git
+node_modules
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local

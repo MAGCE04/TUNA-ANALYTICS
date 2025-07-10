@@ -17,15 +17,6 @@ import { RevenueChart } from './components/charts/RevenueChart';
 import { ActivityChart } from './components/charts/ActivityChart';
 import { LiquidityChart } from './components/charts/LiquidityChart';
 
-// Array of colors for charts
-const COLORS = [
-  '#00e4ff', // Aqua
-  '#9333ea', // Purple
-  '#00ffa3', // Neon green
-  '#ffb300', // Amber
-  '#ff4d6d', // Pink
-];
-
 export default function Home() {
   // State for time range selector
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d');
