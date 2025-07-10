@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import { PoolData, TimeRange } from '../types';
 import { filterDataByTimeRange } from '../lib/utils';
 
+// Define a type that extends PoolData with timestamp
+type PoolDataWithTimestamp = PoolData & { timestamp: number };
+
 export const usePoolsData = (timeRange: TimeRange) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -20,17 +23,18 @@ export const usePoolsData = (timeRange: TimeRange) => {
           throw new Error('Failed to fetch pools data');
         }
         
-        const data = await response.json();
+        const data: PoolData[] = await response.json();
         
         // Add timestamp for filtering
-        const dataWithTimestamp = data.map((pool: any) => ({
+        const dataWithTimestamp: PoolDataWithTimestamp[] = data.map((pool) => ({
           ...pool,
           timestamp: Date.now() - Math.random() * 30 * 24 * 60 * 60 * 1000 // Mock timestamp for demo
         }));
         
         // Filter data based on time range
-        const filteredData = filterDataByTimeRange(dataWithTimestamp, timeRange);
+        const filteredData = filterDataByTimeRange<PoolDataWithTimestamp>(dataWithTimestamp, timeRange);
         
+        // The filtered data still has all PoolData properties plus timestamp
         setPools(filteredData);
         
         if (filteredData.length > 0) {
