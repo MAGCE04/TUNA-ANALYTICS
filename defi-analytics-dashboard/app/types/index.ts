@@ -133,6 +133,7 @@ export interface UserMetrics {
   mau: number; // Monthly Active Users
   retentionRate: number; // Percentage of returning users
   averageTransactionsPerUser: number;
+  growthRate?: number; // Growth rate percentage
 }
 
 // Top Wallet Leaderboard
