@@ -8,21 +8,24 @@ import {
 } from 'recharts';
 import { useTopWalletsData } from '../hooks/useTopWalletsData';
 import { formatCurrency } from '../lib/utils';
+import { TimeRange } from '../types'; // ✅ ajusta la ruta si es necesario
 
 export default function WalletsPage() {
+  const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d'); // ⬅️ Esto declara el valor que usas
+
   const {
     topWallets,
-    isLoading,
+    loading,
     error,
     limit,
     lastUpdated,
     setLimit,
-  } = useTopWalletsData();
+  } = useTopWalletsData(selectedTimeRange);
 
   // Colors for charts
   const COLORS = ['#6366f1', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e', '#8b5cf6', '#0ea5e9'];
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>

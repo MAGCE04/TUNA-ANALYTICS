@@ -14,7 +14,7 @@ export default function OrdersPage() {
     orders,
     ordersByPair,
     stats,
-    isLoading,
+    loading,
     error,
     selectedPair,
     selectedStatus,
@@ -25,7 +25,6 @@ export default function OrdersPage() {
     fillRate,
   } = useLimitOrdersData();
 
-  // Colors for charts
   const COLORS = ['#6366f1', '#10b981', '#ef4444', '#f59e0b', '#8b5cf6'];
   const STATUS_COLORS = {
     open: '#10b981',
@@ -33,7 +32,7 @@ export default function OrdersPage() {
     canceled: '#ef4444',
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
@@ -52,7 +51,6 @@ export default function OrdersPage() {
     );
   }
 
-  // Prepare data for status pie chart
   const statusData = [
     { name: 'Open', value: stats.openOrders },
     { name: 'Filled', value: stats.filledOrders },
@@ -61,7 +59,6 @@ export default function OrdersPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      {/* Page Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-bold">Limit Orders Monitor</h1>
         <p className="text-text-muted mt-1">
@@ -69,7 +66,6 @@ export default function OrdersPage() {
         </p>
       </div>
 
-      {/* Filters */}
       <div className="card mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -95,33 +91,21 @@ export default function OrdersPage() {
               >
                 All
               </button>
-              <button
-                className={`btn text-sm ${selectedStatus === 'open' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ backgroundColor: selectedStatus === 'open' ? STATUS_COLORS.open : 'transparent' }}
-                onClick={() => setSelectedStatus('open')}
-              >
-                Open
-              </button>
-              <button
-                className={`btn text-sm ${selectedStatus === 'filled' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ backgroundColor: selectedStatus === 'filled' ? STATUS_COLORS.filled : 'transparent' }}
-                onClick={() => setSelectedStatus('filled')}
-              >
-                Filled
-              </button>
-              <button
-                className={`btn text-sm ${selectedStatus === 'canceled' ? 'btn-primary' : 'btn-outline'}`}
-                style={{ backgroundColor: selectedStatus === 'canceled' ? STATUS_COLORS.canceled : 'transparent' }}
-                onClick={() => setSelectedStatus('canceled')}
-              >
-                Canceled
-              </button>
+              {['open', 'filled', 'canceled'].map((status) => (
+                <button
+                  key={status}
+                  className={`btn text-sm ${selectedStatus === status ? 'btn-primary' : 'btn-outline'}`}
+                  style={{ backgroundColor: selectedStatus === status ? STATUS_COLORS[status] : 'transparent' }}
+                  onClick={() => setSelectedStatus(status as typeof selectedStatus)}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </button>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Metrics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <div className="card">
           <h3 className="text-sm font-medium text-text-muted">Total Orders</h3>
@@ -144,9 +128,7 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {/* Order Status Distribution */}
         <div className="card">
           <h2 className="text-lg font-bold mb-4">Order Status Distribution</h2>
           <div className="h-80">
@@ -164,9 +146,9 @@ export default function OrdersPage() {
                     nameKey="name"
                     label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                   >
-                    <Cell key="open" fill={STATUS_COLORS.open} />
-                    <Cell key="filled" fill={STATUS_COLORS.filled} />
-                    <Cell key="canceled" fill={STATUS_COLORS.canceled} />
+                    {statusData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.name.toLowerCase() as keyof typeof STATUS_COLORS]} />
+                    ))}
                   </Pie>
                   <Tooltip 
                     formatter={(value: number) => [value.toLocaleString(), 'Orders']}
@@ -183,7 +165,6 @@ export default function OrdersPage() {
           </div>
         </div>
 
-        {/* Trading Pair Distribution */}
         <div className="card">
           <h2 className="text-lg font-bold mb-4">Trading Pair Distribution</h2>
           <div className="h-80">
@@ -192,7 +173,6 @@ export default function OrdersPage() {
         </div>
       </div>
 
-      {/* Orders Table */}
       <div className="card">
         <h2 className="text-lg font-bold mb-4">
           {selectedStatus ? `${selectedStatus.charAt(0).toUpperCase() + selectedStatus.slice(1)} Orders` : 'All Orders'}

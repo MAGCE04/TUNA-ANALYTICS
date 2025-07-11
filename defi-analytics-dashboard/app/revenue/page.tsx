@@ -1,128 +1,139 @@
 'use client';
 
-import { useRevenueData } from '../hooks/useRevenueData';
+import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
+import { useRevenueData } from '../hooks/useRevenueData';
 import { formatCurrency, formatPercentage } from '../lib/utils';
-import { RevenueChart } from '../components/charts/RevenueChart';
+import { RevenueData } from '../types';
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 export default function RevenuePage() {
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('7d');
   const {
-    dailyRevenue,
+    revenueData,
     metrics,
-    isLoading,
-    error,
-    timeRange,
-    lastUpdated,
-    setTimeRange,
-  } = useRevenueData();
+    loading,
+    error
+  } = useRevenueData(timeRange);
 
-  if (isLoading) {
+  const [lastUpdated, setLastUpdated] = useState(new Date());
+
+  useEffect(() => {
+    setLastUpdated(new Date());
+  }, [revenueData]);
+
+  const CustomTooltip = ({ active, payload, label }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="tooltip-custom">
+          <p className="text-sm font-medium mb-1">{label}</p>
+          {payload.map((entry: any, index: number) => (
+            <p key={`item-${index}`} style={{ color: entry.color }} className="text-sm">
+              Revenue: {formatCurrency(entry.value)}
+            </p>
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  const chartData = revenueData.map((item: RevenueData) => ({
+    date: new Date(item.timestamp).toLocaleDateString(),
+    revenue: item.totalUsdValue,
+  }));
+
+  if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="relative">
-          <div className="w-16 h-16 border-4 border-primary rounded-full animate-spin border-t-transparent"></div>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-2xl animate-pulse">🐟</span>
-          </div>
-        </div>
+        <div className="loader">Loading...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="card bg-danger/10 border border-danger/30 max-w-md">
-          <h2 className="text-xl font-bold text-danger flex items-center">
-            <span className="mr-2">⚠️</span> Error Loading Data
-          </h2>
-          <p className="mt-2">{error}</p>
-          <button 
-            className="btn btn-primary mt-4"
-            onClick={() => window.location.reload()}
-          >
-            Try Again
-          </button>
-        </div>
+      <div className="text-red-500 text-center mt-10">
+        <h2 className="text-xl font-bold">⚠️ Error loading data</h2>
+        <p>{error}</p>
       </div>
     );
   }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
         <div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">
-            <span className="gradient-text">Revenue Analytics</span>
-          </h1>
-          <p className="text-text-muted">
-            Last updated: {format(lastUpdated || new Date(), 'MMM d, yyyy HH:mm')}
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">📊 Revenue Dashboard</h1>
+          <p className="text-gray-500">
+            Last updated: {format(lastUpdated, 'MMM d, yyyy HH:mm')}
           </p>
         </div>
-        
-        <div className="mt-4 md:mt-0 flex space-x-2">
-          {(['day', 'week', 'month', 'year', 'all'] as const).map((range) => (
-            <button
-              key={range}
-              className={`btn text-sm ${timeRange === range ? 'btn-primary' : 'btn-outline'}`}
-              onClick={() => setTimeRange(range)}
-            >
-              {range.charAt(0).toUpperCase() + range.slice(1)}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Revenue Chart */}
-      <div className="card mb-8">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Revenue Over Time</h2>
-        </div>
-        <div className="h-96">
-          <RevenueChart />
+        <div className="mt-4 md:mt-0">
+          <select
+            className="select bg-card border border-gray-300 p-2 rounded-md"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value as any)}
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
         </div>
       </div>
 
       {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="card">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Total Revenue</h3>
-            <span className="text-primary text-xl">💰</span>
-          </div>
-          <p className="text-3xl font-bold gradient-text">{formatCurrency(metrics?.totalRevenue || 0)}</p>
-          <div className="mt-2 text-text-muted text-sm">Lifetime earnings</div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        <div className="card p-4 bg-white shadow">
+          <h3 className="text-sm text-gray-500">Total Revenue</h3>
+          <p className="text-2xl font-bold">{formatCurrency(metrics.totalRevenue)}</p>
         </div>
-        
-        <div className="card">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Average Daily</h3>
-            <span className="text-primary text-xl">📅</span>
-          </div>
-          <p className="text-3xl font-bold">{formatCurrency(metrics?.averageDailyRevenue || 0)}</p>
-          <div className="mt-2 text-text-muted text-sm">Per day average</div>
+        <div className="card p-4 bg-white shadow">
+          <h3 className="text-sm text-gray-500">Average Daily Revenue</h3>
+          <p className="text-2xl font-bold">{formatCurrency(metrics.averageDailyRevenue)}</p>
         </div>
-        
-        <div className="card">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">7-Day Average</h3>
-            <span className="text-primary text-xl">📊</span>
-          </div>
-          <p className="text-3xl font-bold">{formatCurrency(metrics?.sevenDayAverage || 0)}</p>
-          <div className="mt-2 text-text-muted text-sm">Last week performance</div>
-        </div>
-        
-        <div className="card">
-          <div className="flex justify-between items-start mb-4">
-            <h3 className="text-sm font-medium text-text-muted">Daily Growth</h3>
-            <span className="text-primary text-xl">{metrics?.dailyGrowthPercentage >= 0 ? '📈' : '📉'}</span>
-          </div>
-          <p className={`text-3xl font-bold ${metrics?.dailyGrowthPercentage >= 0 ? 'text-success' : 'text-danger'}`}>
-            {formatPercentage(Math.abs(metrics?.dailyGrowthPercentage || 0))}
-            <span className="text-sm ml-1">{metrics?.dailyGrowthPercentage >= 0 ? 'up' : 'down'}</span>
+        <div className="card p-4 bg-white shadow">
+          <h3 className="text-sm text-gray-500">Growth vs. Prev Period</h3>
+          <p className="text-2xl font-bold text-green-600">
+            {formatPercentage(metrics.dailyGrowthPercentage)}
           </p>
-          <div className="mt-2 text-text-muted text-sm">Day over day change</div>
         </div>
+        <div className="card p-4 bg-white shadow">
+          <h3 className="text-sm text-gray-500">Top Revenue Day</h3>
+          <p className="text-md font-semibold">{metrics.topRevenueDay.date}</p>
+          <p className="text-xl font-bold">{formatCurrency(metrics.topRevenueDay.amount)}</p>
+        </div>
+      </div>
+
+      {/* Chart */}
+      <div className="card bg-white shadow p-6">
+        <h2 className="text-lg font-bold mb-4">Daily Revenue</h2>
+        {chartData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={chartData}>
+              <defs>
+                <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#00bcd4" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#00bcd4" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="date" stroke="#666" />
+              <YAxis stroke="#666" tickFormatter={(val) => `$${val}`} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="#00bcd4"
+                fillOpacity={1}
+                fill="url(#colorRevenue)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-gray-500 text-center">No revenue data available.</p>
+        )}
       </div>
     </div>
   );

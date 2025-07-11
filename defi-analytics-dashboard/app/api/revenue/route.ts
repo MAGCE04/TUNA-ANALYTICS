@@ -15,8 +15,7 @@ const generateWalletAddress = () => {
 const generateRevenueData = () => {
   const data: RevenueData[] = [];
   const now = Date.now();
-  
-  // Wallet addresses
+
   const wallets = [
     generateWalletAddress(),
     generateWalletAddress(),
@@ -24,22 +23,19 @@ const generateRevenueData = () => {
     generateWalletAddress(),
     generateWalletAddress()
   ];
-  
-  // Generate data for the last 90 days
+
   for (let i = 90; i >= 0; i--) {
     const date = new Date();
     date.setDate(date.getDate() - i);
-    
-    // Base values with some randomization and trend
-    const baseRevenue = 5000 + Math.floor(i / 10) * 500; // Gradually increasing trend
-    const randomFactor = 0.3; // 30% random variation
-    
-    // Generate revenue for each wallet
+
+    const baseRevenue = 5000 + Math.floor(i / 10) * 500;
+    const randomFactor = 0.3;
+
     wallets.forEach(wallet => {
-      const solAmount = Math.floor(baseRevenue * 0.4 * (1 + (Math.random() * randomFactor - randomFactor/2)));
-      const usdcAmount = Math.floor(baseRevenue * 0.6 * (1 + (Math.random() * randomFactor - randomFactor/2)));
-      const totalUsdValue = solAmount * 100 + usdcAmount; // Assuming 1 SOL = $100
-      
+      const solAmount = Math.floor(baseRevenue * 0.4 * (1 + (Math.random() * randomFactor - randomFactor / 2)));
+      const usdcAmount = Math.floor(baseRevenue * 0.6 * (1 + (Math.random() * randomFactor - randomFactor / 2)));
+      const totalUsdValue = solAmount * 100 + usdcAmount;
+
       data.push({
         timestamp: date.getTime(),
         wallet,
@@ -50,13 +46,32 @@ const generateRevenueData = () => {
       });
     });
   }
-  
+
   return data;
 };
 
+// ✅ Responder datos con headers CORS
 export async function GET() {
-  // Generate mock data
   const revenueData = generateRevenueData();
-  
-  return NextResponse.json(revenueData);
+
+  return new NextResponse(JSON.stringify(revenueData), {
+    status: 200,
+    headers: {
+      'Access-Control-Allow-Origin': '*', // o 'https://tunaiq.com' en producción
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
+}
+
+// ✅ Manejar preflight request (CORS OPTIONS)
+export async function OPTIONS() {
+  return new Response(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  });
 }

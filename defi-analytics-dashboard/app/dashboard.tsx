@@ -29,11 +29,11 @@ export default function NewDashboard() {
   } = useRevenueData(selectedTimeRange);
   
   const {
-    activityData,
+    userActivity,
     metrics: userMetrics,
-    loading: userLoading,
+    isLoading: userLoading,
     error: userError
-  } = useUserActivityData(selectedTimeRange);
+  } = useUserActivityData();
   
   const {
     topWallets,

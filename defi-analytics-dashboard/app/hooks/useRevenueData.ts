@@ -31,7 +31,8 @@ export const useRevenueData = (timeRange: TimeRange) => {
         setRevenueData(data);
         
         // Filter data based on time range
-        const filteredData = filterDataByTimeRange(data, timeRange);
+        const filteredData: RevenueData[] = filterDataByTimeRange(data, timeRange);
+
         
         // Calculate metrics
         if (filteredData.length > 0) {

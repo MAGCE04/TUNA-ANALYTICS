@@ -1,6 +1,6 @@
 import { PublicKey } from '@solana/web3.js';
 
-export type TimeRange = '7d' | '30d' | '90d' | 'all';
+export type TimeRange = '7d' | '30d' | '90d' | 'day' | 'week' | 'month' | 'year' | 'all';
 export type TokenType = 'SOL' | 'USDC' | 'all';
 
 export interface WalletInfo {
@@ -120,12 +120,13 @@ export interface LimitOrderStats {
 
 // User Activity Dashboard
 export interface UserActivity {
-  date: string;
+  timestamp: number;
   uniqueUsers: number;
   newUsers: number;
-  returningUsers: number;
   totalTransactions: number;
+  returningUsers: number;
 }
+
 
 export interface UserMetrics {
   dau: number; // Daily Active Users
@@ -139,12 +140,14 @@ export interface UserMetrics {
 // Top Wallet Leaderboard
 export interface TopWallet {
   address: string;
-  shortAddress: string;
+  shortAddress?: string;
   tradeVolume: number;
   tradeCount: number;
   lastActive: number;
-  favoriteToken?: string;
+  favoriteToken: string;
+  timestamp: number;
 }
+
 
 // Pool Utilization & Insights
 export interface PoolData {

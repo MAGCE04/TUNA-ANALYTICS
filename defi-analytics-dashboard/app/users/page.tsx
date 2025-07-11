@@ -158,9 +158,9 @@ export default function UsersPage() {
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
                 <XAxis 
-                  dataKey="date" 
+                  dataKey="timestamp" 
                   stroke="#94a3b8"
-                  tickFormatter={(date) => format(new Date(date), 'MMM d')}
+                  tickFormatter={(timestamp) => format(new Date(timestamp), 'MMM d')}
                 />
                 <YAxis stroke="#94a3b8" />
                 <Tooltip 
@@ -197,9 +197,9 @@ export default function UsersPage() {
             </thead>
             <tbody>
               {userActivity.slice(0, 10).map((day) => (
-                <tr key={day.date} className="border-b border-border">
+                <tr key={day.timestamp} className="border-b border-border">
                   <td className="px-4 py-2">
-                    {format(new Date(day.date), 'MMM d, yyyy')}
+                    {format(new Date(day.timestamp), 'MMM d, yyyy')}
                   </td>
                   <td className="px-4 py-2 text-right">{day.uniqueUsers.toLocaleString()}</td>
                   <td className="px-4 py-2 text-right">{day.newUsers.toLocaleString()}</td>
