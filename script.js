@@ -2,13 +2,14 @@
 
 // API endpoints
 const API_ENDPOINTS = {
-  revenue: 'https://api.defituna.com/revenue',
-  liquidations: 'https://api.defituna.com/liquidations',
-  orders: 'https://api.defituna.com/orders',
-  pools: 'https://api.defituna.com/pools',
-  users: 'https://api.defituna.com/users',
-  wallets: 'https://api.defituna.com/wallets'
+  revenue: '/api/revenue',
+  liquidations: '/api/liquidations',
+  orders: '/api/orders',
+  pools: '/api/pools',
+  users: '/api/users',
+  wallets: '/api/wallets'
 };
+
 
 // Mock data for fallback if API is unavailable
 const MOCK_DATA = {
@@ -178,7 +179,7 @@ function createOrUpdateChart(chartId, labels, data, label, color = '#00ffcc') {
   }
   
   // Clear any existing chart
-  if (window[chartId]) {
+  if (window[chartId] && typeof window[chartId].destroy === 'function') {
     window[chartId].destroy();
   }
   
