@@ -14,7 +14,8 @@ export const useUserActivityData = () => {
     averageTransactionsPerUser: 0
   });
 
-  const [timeRange, setTimeRange] = useState<TimeRange>('week');
+  // Update to use a valid TimeRange value
+  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [totalUniqueUsers, setTotalUniqueUsers] = useState(0);
   const [newUserGrowthRate, setNewUserGrowthRate] = useState(0);
@@ -61,7 +62,7 @@ export const useUserActivityData = () => {
 
           setTotalUniqueUsers(totalUnique);
 
-          // Calcular growth de usuarios nuevos
+          // Calculate new user growth
           const previousPeriodStart = new Date();
           previousPeriodStart.setDate(previousPeriodStart.getDate() - days * 2);
           const previousPeriodData = formattedData.filter(
