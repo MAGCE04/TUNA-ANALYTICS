@@ -2,9 +2,7 @@
 const nextConfig = {
   reactStrictMode: false, // Disable strict mode to prevent double rendering in development
   swcMinify: true,
-  experimental: {
-    appDir: true,
-  },
+  // Remove experimental appDir flag as it's no longer needed in Next.js 13.5+
   // Ensure we're not using stale cache
   generateEtags: false,
   // Disable image optimization to prevent caching issues
