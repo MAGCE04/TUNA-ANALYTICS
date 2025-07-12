@@ -10,6 +10,7 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
   selectedRange,
   onChange
 }) => {
+  // Only use the time ranges that are actually implemented in the app
   const ranges: TimeRange[] = ['7d', '30d', '90d', 'all'];
   
   return (
@@ -17,7 +18,10 @@ const TimeRangeSelector: React.FC<TimeRangeSelectorProps> = ({
       {ranges.map((range) => (
         <button
           key={range}
-          onClick={() => onChange(range)}
+          onClick={() => {
+            console.log(`Changing time range to: ${range}`);
+            onChange(range);
+          }}
           className={`px-3 py-1 text-sm rounded-md transition-colors ${
             selectedRange === range
               ? 'bg-blue-600 text-white'

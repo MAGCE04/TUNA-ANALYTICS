@@ -14,6 +14,8 @@ rm -rf .next
 rm -rf node_modules/.cache
 rm -rf out
 rm -rf .vercel/output
+rm -rf public/sw.js
+rm -rf public/workbox-*.js
 
 # Remove any conflicting files
 echo "Removing any conflicting files..."
@@ -29,6 +31,15 @@ npm cache clean --force
 echo "Reinstalling dependencies..."
 rm -rf node_modules
 npm install
+
+# Clear browser cache instructions
+echo "===== IMPORTANT ====="
+echo "Please also clear your browser cache before testing:"
+echo "1. Open Developer Tools (F12 or Ctrl+Shift+I)"
+echo "2. Go to Network tab"
+echo "3. Check 'Disable cache'"
+echo "4. Hold Shift and click the refresh button"
+echo "===================="
 
 # Build the application
 echo "Building the application..."

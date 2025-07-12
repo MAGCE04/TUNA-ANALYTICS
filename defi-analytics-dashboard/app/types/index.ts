@@ -1,6 +1,7 @@
 import { PublicKey } from '@solana/web3.js';
 
-export type TimeRange = '7d' | '30d' | '90d' | 'day' | 'week' | 'month' | 'year' | 'all';
+// Simplified TimeRange to only include values actually used in the application
+export type TimeRange = '7d' | '30d' | '90d' | 'all';
 export type TokenType = 'SOL' | 'USDC' | 'all';
 
 export interface WalletInfo {
@@ -175,15 +176,4 @@ export interface ProtocolMetrics {
   volumeGrowth: number;
   revenueGrowth: number;
   userGrowth: number;
-}
-
-// Recent Activity
-export interface ActivityItem {
-  id: string;
-  timestamp: number;
-  wallet: string;
-  action: string;
-  token?: string;
-  amount?: number;
-  usdValue?: number;
 }

@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: true,
+  reactStrictMode: false, // Disable strict mode to prevent double rendering in development
   swcMinify: true,
   experimental: {
     appDir: true,
@@ -19,11 +19,31 @@ const nextConfig = {
         headers: [
           {
             key: 'Cache-Control',
-            value: 'no-store, max-age=0',
+            value: 'no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0',
+          },
+          {
+            key: 'Pragma',
+            value: 'no-cache',
+          },
+          {
+            key: 'Expires',
+            value: '0',
           },
         ],
       },
     ];
+  },
+  // Disable webpack caching
+  webpack: (config, { dev, isServer }) => {
+    // Add cache busting for development
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        poll: 1000, // Check for changes every second
+        aggregateTimeout: 300, // Delay before rebuilding
+      };
+    }
+    return config;
   },
 };
 

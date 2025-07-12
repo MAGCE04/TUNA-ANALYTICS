@@ -10,13 +10,15 @@ export const filterDataByTimeRange = <T extends { timestamp: number }>(
   data: T[],
   timeRange: TimeRange
 ): T[] => {
-  if (timeRange === 'all') return data;
+  if (!data || data.length === 0) return [];
+  if (timeRange === 'all') return [...data]; // Return a copy to ensure reactivity
   
   const now = Date.now();
   const timeRangeInDays = timeRange === '7d' ? 7 : timeRange === '30d' ? 30 : 90;
   const cutoffTime = now - timeRangeInDays * 24 * 60 * 60 * 1000;
   
-  return data.filter(item => item.timestamp >= cutoffTime);
+  console.log(`Filtering data for time range: ${timeRange}, cutoff: ${new Date(cutoffTime).toISOString()}`);
+  return [...data.filter(item => item.timestamp >= cutoffTime)];
 };
 
 /**

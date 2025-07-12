@@ -18,21 +18,28 @@ export const useRevenueData = (timeRange: TimeRange) => {
   });
 
   useEffect(() => {
+    console.log(`useRevenueData hook called with timeRange: ${timeRange}`);
+    
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await fetch('/api/revenue');
+        console.log('Fetching revenue data...');
+        
+        // Add a cache-busting parameter to prevent caching
+        const timestamp = new Date().getTime();
+        const response = await fetch(`/api/revenue?t=${timestamp}`);
         
         if (!response.ok) {
           throw new Error('Failed to fetch revenue data');
         }
         
         const data = await response.json();
+        console.log(`Received ${data.length} revenue data points`);
         setRevenueData(data);
         
         // Filter data based on time range
         const filteredData: RevenueData[] = filterDataByTimeRange(data, timeRange);
-
+        console.log(`Filtered to ${filteredData.length} data points for ${timeRange}`);
         
         // Calculate metrics
         if (filteredData.length > 0) {
@@ -69,9 +76,13 @@ export const useRevenueData = (timeRange: TimeRange) => {
             dailyGrowthPercentage: revenueGrowth,
             topRevenueDay: topDay
           });
+          
+          console.log('Metrics calculated:', { totalRevenue, averageDailyRevenue, revenueGrowth, topDay });
         }
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+        const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
+        console.error('Error fetching revenue data:', errorMessage);
+        setError(errorMessage);
       } finally {
         setLoading(false);
       }
