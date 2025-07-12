@@ -42,25 +42,6 @@ const nextConfig = {
     }
     return config;
   },
-  // Ensure all routes are properly handled
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/:path*',
-      },
-    ];
-  },
-  // Add fallback for 404 pages
-  async redirects() {
-    return [
-      {
-        source: '/404',
-        destination: '/',
-        permanent: false,
-      },
-    ];
-  },
   // Output standalone build for better Vercel compatibility
   output: 'standalone',
 };

@@ -1,93 +1,99 @@
 # Troubleshooting Guide
 
-## 404 Errors on Vercel Deployment
+This document provides solutions for common issues you might encounter when working with the DeFi Tuna Analytics Dashboard.
 
-If you're experiencing 404 errors on your Vercel deployment, follow these steps to resolve the issue:
+## 404 Page Not Found Errors
 
-### 1. Check Your Vercel Configuration
+If you're experiencing 404 errors:
 
-Make sure your `vercel.json` file has the correct routing configuration:
+1. **Check your URL path**: Ensure you're using a valid route defined in the application.
 
-```json
-{
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/" }
-  ]
-}
-```
+2. **Clear browser cache**: Sometimes browsers cache old routing information.
 
-### 2. Ensure Proper Next.js Configuration
+3. **Rebuild the application**:
+   ```bash
+   npm run rebuild
+   ```
 
-Update your `next.config.js` to include:
+4. **Check for deployment issues**: If deployed on Vercel, check the deployment logs for any routing errors.
 
-```js
-module.exports = {
-  // Other config...
-  output: 'standalone',
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/:path*',
-      },
-    ];
-  },
-}
-```
+## Build Errors
 
-### 3. Add Fallback Pages
+If you encounter build errors:
 
-Create fallback pages in both the `public` directory and the `pages` directory:
+1. **Clear Next.js cache**:
+   ```bash
+   npm run clean
+   ```
 
-- `public/404.html`
-- `pages/404.js`
+2. **Update dependencies**:
+   ```bash
+   npm update
+   ```
 
-### 4. Force a Clean Rebuild
+3. **Force a complete rebuild**:
+   ```bash
+   npm run force-rebuild
+   ```
 
-Run the following commands to force a clean rebuild:
+## TypeScript Errors
 
-```bash
-npm run clean
-rm -rf .vercel/output
-npm run build
-```
+For TypeScript-related issues:
 
-### 5. Check for Conflicting Configurations
+1. **Run type checking**:
+   ```bash
+   npm run type-check
+   ```
 
-Ensure you don't have conflicting configurations between:
-- App Router (`app` directory)
-- Pages Router (`pages` directory)
+2. **Update TypeScript definitions**:
+   ```bash
+   npm install --save-dev @types/react @types/node
+   ```
 
-### 6. Verify Middleware
+3. **Check for incompatible types**: Ensure your component props match their TypeScript interfaces.
 
-Make sure your middleware isn't blocking any routes unintentionally.
+## Data Not Loading
 
-### 7. Contact Vercel Support
+If data isn't loading properly:
 
-If all else fails, contact Vercel support with your deployment logs.
+1. **Check API routes**: Ensure the API routes are working correctly.
 
-## Common Issues
+2. **Verify network requests**: Use browser developer tools to check for network errors.
 
-### Mixed Router Types
+3. **Check SWR cache**: Try using the `revalidate` function from SWR to refresh data.
 
-Next.js 13+ supports both the App Router and Pages Router. Make sure you're not mixing them incorrectly.
+## Styling Issues
 
-### Caching Issues
+For styling problems:
 
-Vercel might cache your deployment. Try:
+1. **Rebuild Tailwind CSS**:
+   ```bash
+   npx tailwindcss build -i styles/globals.css -o public/styles.css
+   ```
 
-```bash
-vercel --force
-```
+2. **Check for conflicting styles**: Look for CSS conflicts in your components.
 
-### Build Output Issues
+3. **Verify class names**: Ensure you're using the correct Tailwind class names.
 
-Check your build output directory matches what Vercel expects:
+## Deployment Issues
 
-```json
-{
-  "outputDirectory": ".next"
-}
-```
+For deployment problems:
+
+1. **Check environment variables**: Ensure all required environment variables are set.
+
+2. **Verify build output**: Check the build logs for any errors.
+
+3. **Test locally first**: Always test your changes locally before deploying.
+
+## Still Having Issues?
+
+If you're still experiencing problems:
+
+1. Check the project's GitHub issues to see if others have encountered the same problem.
+
+2. Create a new issue with detailed information about the problem, including:
+   - Steps to reproduce
+   - Expected behavior
+   - Actual behavior
+   - Screenshots or error logs
+   - Environment details (browser, OS, Node.js version)

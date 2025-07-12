@@ -1,10 +1,1 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from '../app/page';
-import '../app/globals.css';
-
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+// This file is being deleted as it's not needed with Next.js

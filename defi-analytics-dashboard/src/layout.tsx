@@ -1,1 +1,1 @@
-export default function Layout() { return null }
+// This file is being deleted as it's a duplicate of app/layout.tsx
