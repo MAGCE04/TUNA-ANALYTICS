@@ -1,8 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false, // Disable strict mode to prevent double rendering in development
+  reactStrictMode: false,
   swcMinify: true,
-  // Remove experimental appDir flag as it's no longer needed in Next.js 13.5+
   // Ensure we're not using stale cache
   generateEtags: false,
   // Disable image optimization to prevent caching issues
@@ -42,6 +41,27 @@ const nextConfig = {
       };
     }
     return config;
+  },
+  // Add trailing slash to fix 404 issues
+  trailingSlash: true,
+  // Ensure all routes are properly handled
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      },
+    ];
+  },
+  // Add fallback for 404 pages
+  async redirects() {
+    return [
+      {
+        source: '/404',
+        destination: '/',
+        permanent: false,
+      },
+    ];
   },
 };
 

@@ -1,4 +1,25 @@
-// This file is auto-generated from the CIDL source.
-// Editing this file directly is not recommended as it may be overwritten.
-//
-// Docs: https://docs.codigo.ai/c%C3%B3digo-interface-description-language/specification#errors
+use anchor_lang::prelude::*;
+
+#[error_code]
+pub enum ErrorCode {
+    #[msg("Wallet already exists in tracking list")]
+    WalletAlreadyExists,
+    
+    #[msg("Wallet not found in tracking list")]
+    WalletNotFound,
+    
+    #[msg("Too many wallets - maximum 10 wallets can be tracked")]
+    TooManyWallets,
+    
+    #[msg("Invalid update interval - minimum interval is 1 hour (3600 seconds)")]
+    InvalidUpdateInterval,
+    
+    #[msg("Unauthorized - only the authority can perform this action")]
+    Unauthorized,
+    
+    #[msg("Update not due yet - please wait until the next update interval")]
+    UpdateNotDue,
+    
+    #[msg("Invalid revenue amount")]
+    InvalidRevenueAmount,
+}

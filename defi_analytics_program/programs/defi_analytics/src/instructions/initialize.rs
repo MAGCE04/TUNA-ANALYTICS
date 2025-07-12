@@ -2,8 +2,6 @@ use crate::*;
 use anchor_lang::prelude::*;
 use std::str::FromStr;
 
-
-
 	#[derive(Accounts)]
 	#[instruction(
 		wallets: Vec<Pubkey>,
@@ -41,7 +39,28 @@ pub fn handler(
 	wallets: Vec<Pubkey>,
 	update_interval: u64,
 ) -> Result<()> {
-    // Implement your business logic here...
-	
-	Ok(())
+    // Validate inputs
+    if wallets.len() > 10 {
+        return err!(ErrorCode::TooManyWallets);
+    }
+
+    if update_interval < 3600 {  // Minimum 1 hour
+        return err!(ErrorCode::InvalidUpdateInterval);
+    }
+
+    // Get current timestamp
+    let clock = Clock::get()?;
+    let current_time = clock.unix_timestamp;
+
+    // Initialize the protocol config
+    let config = &mut ctx.accounts.config;
+    config.authority = ctx.accounts.authority.key();
+    config.wallets = wallets;
+    config.last_updated = current_time;
+    config.update_interval = update_interval;
+
+    msg!("Protocol analytics initialized with {} wallets", config.wallets.len());
+    msg!("Update interval set to {} seconds", config.update_interval);
+    
+    Ok(())
 }
