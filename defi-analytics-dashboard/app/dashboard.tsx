@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useRevenueData } from './hooks/useRevenueData';
 import { formatCurrency, formatPercentage, formatSol, formatUsdc } from './lib/utils';
 import Link from 'next/link';
-import TimeRangeSelector from './components/TimeRangeSelector';
+// Removed TimeRangeSelector import
 import { useUserActivityData } from './hooks/useUserActivityData';
 import { useTopWalletsData } from './hooks/useTopWalletsData';
 import { useLimitOrdersData } from './hooks/useLimitOrdersData';
@@ -19,18 +19,19 @@ import { TradingVolumeChart } from './components/charts/TradingVolumeChart';
 import { AssetAllocationChart } from './components/charts/AssetAllocationChart';
 import { ProtocolPerformanceChart } from './components/charts/ProtocolPerformanceChart';
 import { useProtocolStatus } from './hooks/useProtocolStatus';
+import { TimeSpecificChart } from './components/charts/TimeSpecificChart';
 
 export default function NewDashboard() {
-  // State for time range selector
-  const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d');
+  // Using a fixed time range for data fetching (30d as default)
+  const fixedTimeRange: TimeRange = '30d';
   
-  // Use our custom hooks with the selected time range
+  // Use our custom hooks with the fixed time range
   const {
     revenueData,
     metrics: revenueMetrics,
     loading: revenueLoading,
     error: revenueError
-  } = useRevenueData(selectedTimeRange);
+  } = useRevenueData(fixedTimeRange);
   
   const {
     userActivity,
@@ -43,14 +44,14 @@ export default function NewDashboard() {
     topWallets,
     loading: walletsLoading,
     error: walletsError
-  } = useTopWalletsData(selectedTimeRange);
+  } = useTopWalletsData(fixedTimeRange);
   
   const {
     orders,
     stats: orderStats,
     loading: ordersLoading,
     error: ordersError
-  } = useLimitOrdersData(selectedTimeRange);
+  } = useLimitOrdersData(fixedTimeRange);
   
   const {
     pools,
@@ -59,7 +60,7 @@ export default function NewDashboard() {
     avgUtilizationRate,
     loading: poolsLoading,
     error: poolsError
-  } = usePoolsData(selectedTimeRange);
+  } = usePoolsData(fixedTimeRange);
 
   const {
     status: protocolStatus,
@@ -140,12 +141,7 @@ export default function NewDashboard() {
             </p>
           </div>
           
-          <div className="mt-4 md:mt-0">
-            <TimeRangeSelector 
-              selectedRange={selectedTimeRange} 
-              onChange={setSelectedTimeRange} 
-            />
-          </div>
+          {/* Removed TimeRangeSelector */}
         </div>
       </div>
 
@@ -243,6 +239,22 @@ export default function NewDashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* NEW SECTION: Time-specific Charts */}
+      <div className="mb-10 border-b border-border pb-6">
+        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+          <span className="text-primary text-xl mr-2">⏰</span> Time-Based Revenue Analysis
+        </h2>
+        
+        {/* 7-day Chart */}
+        <TimeSpecificChart timeRange="7d" title="Last 7 Days Revenue" />
+        
+        {/* 30-day Chart */}
+        <TimeSpecificChart timeRange="30d" title="Last 30 Days Revenue" />
+        
+        {/* 90-day Chart */}
+        <TimeSpecificChart timeRange="90d" title="Last 90 Days Revenue" />
       </div>
 
       {/* SECTION 1: USER OVERVIEW */}
