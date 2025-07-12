@@ -11,7 +11,7 @@ cd /home/magce7564/DEFITUNA3
 git add package.json
 
 # Commit the changes
-git commit -m "fix: add missing dependencies for Vercel build"
+git commit -m "fix: add @solana/web3.js dependency for Vercel build"
 
 # Push to the main branch
 git push origin main
