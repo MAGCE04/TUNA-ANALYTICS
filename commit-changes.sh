@@ -7,11 +7,14 @@ echo "===== COMMITTING AND PUSHING TYPESCRIPT CONFIGURATION CHANGES ====="
 # Navigate to the project root
 cd /home/magce7564/DEFITUNA3
 
+# Create the target/types directory if it doesn't exist
+mkdir -p defi_analytics_program/target/types
+
 # Add the changes to git
-git add package.json
+git add tsconfig.json defi_analytics_program/target/types/defi_analytics.ts
 
 # Commit the changes
-git commit -m "fix: add @coral-xyz/anchor dependency for Vercel build"
+git commit -m "fix: exclude Anchor program from TypeScript compilation and add dummy types"
 
 # Push to the main branch
 git push origin main
