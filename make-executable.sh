@@ -1,2 +1,4 @@
-chmod +x /home/magce7564/DEFITUNA3/defi-analytics-dashboard/fix-typescript.sh
-/home/magce7564/DEFITUNA3/defi-analytics-dashboard/fix-typescript.sh
+#!/bin/bash
+
+# Make the commit-changes.sh script executable
+chmod +x /home/magce7564/DEFITUNA3/commit-changes.sh
