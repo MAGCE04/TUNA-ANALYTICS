@@ -8,10 +8,10 @@ echo "===== COMMITTING AND PUSHING TYPESCRIPT CONFIGURATION CHANGES ====="
 cd /home/magce7564/DEFITUNA3
 
 # Add the changes to git
-git add package.json tsconfig.json
+git add package.json
 
 # Commit the changes
-git commit -m "fix: add TypeScript for Vercel build"
+git commit -m "fix: add missing dependencies for Vercel build"
 
 # Push to the main branch
 git push origin main
