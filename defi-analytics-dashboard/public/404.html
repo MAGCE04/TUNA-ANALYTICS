@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="refresh" content="3;url=/" />
+  <title>Page Not Found - DeFi Tuna Analytics</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #0f172a;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .error-code {
+      font-size: 5rem;
+      font-weight: bold;
+      color: #38bdf8;
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-bottom: 1.5rem;
+      opacity: 0.8;
+    }
+    a {
+      color: #38bdf8;
+      text-decoration: none;
+      border: 1px solid #38bdf8;
+      padding: 10px 20px;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+    }
+    a:hover {
+      background-color: #38bdf8;
+      color: #0f172a;
+    }
+    .redirect-message {
+      margin-top: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="error-code">404</div>
+    <h1>Page Not Found</h1>
+    <p>Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.</p>
+    <a href="/">Return to Dashboard</a>
+    <p class="redirect-message">You will be redirected to the dashboard in 3 seconds...</p>
+  </div>
+  <script>
+    // Log the 404 error
+    console.error('404 error: Page not found');
+    
+    // Redirect to the home page after 3 seconds
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 3000);
+  </script>
+</body>
+</html>

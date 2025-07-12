@@ -1,59 +1,93 @@
-# How to Fix the Frontend Update Issue
+# Troubleshooting Guide
 
-Follow these steps to resolve the issue with the frontend not updating:
+## 404 Errors on Vercel Deployment
 
-## 1. Delete the conflicting layout.js file
+If you're experiencing 404 errors on your Vercel deployment, follow these steps to resolve the issue:
 
-The presence of both `layout.js` and `layout.tsx` is causing conflicts. I've already deleted the `layout.js` file for you.
+### 1. Check Your Vercel Configuration
 
-## 2. Clear Next.js cache
+Make sure your `vercel.json` file has the correct routing configuration:
 
-Next.js caches aggressively, which can prevent updates from appearing. Run these commands:
-
-```bash
-# Navigate to your project directory
-cd /home/magce7564/DEFITUNA2/defi-analytics-dashboard
-
-# Remove the .next cache directory
-rm -rf .next
-
-# Remove node_modules cache
-rm -rf node_modules/.cache
+```json
+{
+  "routes": [
+    { "handle": "filesystem" },
+    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/(.*)", "dest": "/" }
+  ]
+}
 ```
 
-## 3. Rebuild and restart the application
+### 2. Ensure Proper Next.js Configuration
 
-```bash
-# Make the rebuild script executable
-chmod +x rebuild.sh
+Update your `next.config.js` to include:
 
-# Run the rebuild script
-./rebuild.sh
+```js
+module.exports = {
+  // Other config...
+  output: 'standalone',
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      },
+    ];
+  },
+}
 ```
 
-## 4. If using development server
+### 3. Add Fallback Pages
 
-If you're using the development server instead of a production build:
+Create fallback pages in both the `public` directory and the `pages` directory:
+
+- `public/404.html`
+- `pages/404.js`
+
+### 4. Force a Clean Rebuild
+
+Run the following commands to force a clean rebuild:
 
 ```bash
-# Stop any running Next.js processes
-# Then start the development server with cache disabled
-npm run dev
+npm run clean
+rm -rf .vercel/output
+npm run build
 ```
 
-## 5. Hard refresh your browser
+### 5. Check for Conflicting Configurations
 
-Once the server is running again, do a hard refresh in your browser:
-- Chrome/Firefox: Ctrl+Shift+R or Cmd+Shift+R (Mac)
-- Or clear your browser cache completely
+Ensure you don't have conflicting configurations between:
+- App Router (`app` directory)
+- Pages Router (`pages` directory)
 
-## Additional Troubleshooting
+### 6. Verify Middleware
 
-If the issue persists:
+Make sure your middleware isn't blocking any routes unintentionally.
 
-1. Check if you're viewing the correct URL (make sure you're not on a cached version)
-2. Verify that the server is actually running the updated code
-3. Try a different browser to rule out browser-specific caching issues
-4. Check the browser console for any errors that might be preventing the page from rendering correctly
+### 7. Contact Vercel Support
 
-The changes should now be visible in your application.
+If all else fails, contact Vercel support with your deployment logs.
+
+## Common Issues
+
+### Mixed Router Types
+
+Next.js 13+ supports both the App Router and Pages Router. Make sure you're not mixing them incorrectly.
+
+### Caching Issues
+
+Vercel might cache your deployment. Try:
+
+```bash
+vercel --force
+```
+
+### Build Output Issues
+
+Check your build output directory matches what Vercel expects:
+
+```json
+{
+  "outputDirectory": ".next"
+}
+```

@@ -42,8 +42,6 @@ const nextConfig = {
     }
     return config;
   },
-  // Add trailing slash to fix 404 issues
-  trailingSlash: true,
   // Ensure all routes are properly handled
   async rewrites() {
     return [
@@ -63,6 +61,8 @@ const nextConfig = {
       },
     ];
   },
+  // Output standalone build for better Vercel compatibility
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
