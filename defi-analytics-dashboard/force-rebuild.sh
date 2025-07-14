@@ -1,2 +1,13 @@
 #!/bin/bash
-# This script is being deleted as it's no longer needed
+
+echo "🧹 Cleaning build artifacts..."
+rm -rf .next
+rm -rf node_modules/.cache
+
+echo "🔄 Reinstalling dependencies..."
+npm ci
+
+echo "🏗️ Rebuilding the application..."
+npm run build
+
+echo "✅ Build completed successfully!"

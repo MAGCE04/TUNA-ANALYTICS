@@ -2,45 +2,50 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function NotFound() {
+  const router = useRouter();
+
+  // Auto-redirect to home page after 5 seconds
   useEffect(() => {
-    // Log the 404 error for debugging
-    console.error('404 page not found error occurred');
-  }, []);
+    const redirectTimer = setTimeout(() => {
+      router.push('/');
+    }, 5000);
+
+    return () => clearTimeout(redirectTimer);
+  }, [router]);
 
   return (
-    <div className="flex items-center justify-center min-h-[70vh] px-4">
-      <div className="text-center">
-        <div className="mb-8 text-6xl font-bold text-primary">404</div>
-        
-        <h1 className="mb-4 text-2xl font-bold">Page Not Found</h1>
-        
-        <p className="mb-8 text-text-muted max-w-md mx-auto">
-          Sorry, we couldn't find the page you're looking for. It might have been moved or doesn't exist.
-        </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center">
-          <Link 
-            href="/"
-            className="btn btn-primary"
-          >
-            Return to Dashboard
-          </Link>
-          
-          <button 
-            onClick={() => window.history.back()}
-            className="btn btn-outline"
-          >
-            Go Back
-          </button>
+    <div className="flex flex-col items-center justify-center min-h-screen text-center px-4">
+      <div className="w-24 h-24 relative mb-8">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-accent opacity-20 blur-md"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-5xl">🐟</span>
         </div>
+      </div>
+      
+      <h1 className="text-4xl font-bold mb-4">Page Not Found</h1>
+      
+      <p className="text-text-muted max-w-md mb-8">
+        The page you're looking for doesn't exist or has been moved. 
+        You'll be redirected to the home page in a few seconds.
+      </p>
+      
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Link 
+          href="/" 
+          className="btn btn-primary"
+        >
+          Go to Dashboard
+        </Link>
         
-        <div className="mt-12 p-4 bg-card rounded-lg max-w-md mx-auto">
-          <p className="text-sm text-text-muted">
-            If you believe this is an error, please contact support or try refreshing the page.
-          </p>
-        </div>
+        <button 
+          onClick={() => window.history.back()} 
+          className="btn btn-outline"
+        >
+          Go Back
+        </button>
       </div>
     </div>
   );
