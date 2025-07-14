@@ -1,385 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>TunaIQ Dashboard</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
-      rel="stylesheet"
-    />
-    <!-- Make sure Chart.js is loaded before our script -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-      body {
-        margin: 0;
-        font-family: "Inter", sans-serif;
-        background-color: #0e0e0e;
-        color: #ffffff;
-        padding: 2rem;
-      }
-      .header {
-        margin-bottom: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-      }
-      .header h1 {
-        font-size: 2rem;
-        margin-bottom: 0.5rem;
-      }
-      .header p {
-        color: #a0a0a0;
-        margin: 0;
-      }
-      .stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-      }
-      .card {
-        background: #1e1e1e;
-        border-radius: 12px;
-        padding: 1.2rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-      .card h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1rem;
-        color: #aaa;
-      }
-      .card p {
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin: 0;
-      }
-      .section {
-        margin-top: 3rem;
-        background: #1e1e1e;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      }
-      .section-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1.5rem;
-      }
-      .section h2 {
-        font-size: 1.25rem;
-        margin: 0;
-      }
-      .time-filter {
-        display: flex;
-        gap: 0.5rem;
-      }
-      .time-btn {
-        background: #2a2a2a;
-        border: none;
-        color: #aaa;
-        padding: 0.4rem 0.8rem;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .time-btn.active {
-        background: #00ffcc;
-        color: #0e0e0e;
-        font-weight: 600;
-      }
-      .time-btn:hover:not(.active) {
-        background: #333;
-        color: #fff;
-      }
-      .chart-container {
-        height: 300px;
-        margin-top: 1rem;
-        position: relative;
-      }
-      .metrics {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .metric {
-        display: flex;
-        flex-direction: column;
-      }
-      .metric-label {
-        font-size: 0.9rem;
-        color: #aaa;
-        margin-bottom: 0.3rem;
-      }
-      .metric-value {
-        font-size: 1.4rem;
-        font-weight: 600;
-      }
-      .growth {
-        display: flex;
-        align-items: center;
-        margin-top: 0.3rem;
-        font-size: 0.9rem;
-      }
-      .growth.positive {
-        color: #00ffcc;
-      }
-      .growth.negative {
-        color: #ff4d4d;
-      }
-      .growth-icon {
-        margin-right: 0.3rem;
-      }
-      .wallet-table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1.5rem;
-      }
-      .wallet-table th {
-        text-align: left;
-        padding: 0.8rem;
-        border-bottom: 1px solid #333;
-        color: #aaa;
-        font-weight: 500;
-        font-size: 0.9rem;
-      }
-      .wallet-table td {
-        padding: 0.8rem;
-        border-bottom: 1px solid #2a2a2a;
-      }
-      .wallet-table tr:last-child td {
-        border-bottom: none;
-      }
-      .wallet-table tr:hover {
-        background: #252525;
-      }
-      .badge {
-        background: #2a2a2a;
-        padding: 0.2rem 0.5rem;
-        border-radius: 4px;
-        font-size: 0.8rem;
-      }
-      .badge-success {
-        background: rgba(0, 255, 204, 0.2);
-        color: #00ffcc;
-      }
-      .loading {
-        display: inline-block;
-        width: 1rem;
-        height: 1rem;
-        border: 2px solid rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        border-top-color: #00ffcc;
-        animation: spin 1s ease-in-out infinite;
-        margin-left: 0.5rem;
-      }
-      @keyframes spin {
-        to { transform: rotate(360deg); }
-      }
-      .hidden {
-        display: none;
-      }
-      .time-period-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
-        margin-bottom: 1.5rem;
-      }
-      .time-stat {
-        background: #252525;
-        border-radius: 8px;
-        padding: 1rem;
-      }
-      .time-stat-label {
-        font-size: 0.9rem;
-        color: #aaa;
-        margin-bottom: 0.5rem;
-      }
-      .time-stat-value {
-        font-size: 1.3rem;
-        font-weight: 600;
-      }
-      .chart-placeholder {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100%;
-        color: #aaa;
-        font-style: italic;
-      }
-      footer {
-        margin-top: 4rem;
-        font-size: 0.9rem;
-        color: #555;
-        display: flex;
-        justify-content: space-between;
-      }
-      .last-updated {
-        font-size: 0.8rem;
-      }
-      .two-column {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1.5rem;
-      }
-      @media (max-width: 1024px) {
-        .two-column {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div class="header">
-      <div>
-        <h1>TunaIQ Dashboard</h1>
-        <p>Solana-based protocol insights</p>
-      </div>
-      <div>
-        <span class="last-updated">Last updated: <span id="last-updated">-</span></span>
-        <span id="loading-indicator" class="loading hidden"></span>
-      </div>
-    </div>
-
-    <!-- Key Metrics Section -->
-    <div class="section">
-      <div class="section-header">
-        <h2>Key Protocol Metrics</h2>
-      </div>
-      
-      <div class="stats">
-        <div class="card">
-          <h2>Total Revenue</h2>
-          <p id="total-revenue">Loading...</p>
-        </div>
-        <div class="card">
-          <h2>Active Users (30d)</h2>
-          <p id="active-users">Loading...</p>
-        </div>
-        <div class="card">
-          <h2>Total Transactions</h2>
-          <p id="total-transactions">Loading...</p>
-        </div>
-        <div class="card">
-          <h2>Tracked Assets</h2>
-          <p id="tracked-assets">Loading...</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Revenue Section -->
-    <div class="section">
-      <div class="section-header">
-        <h2>Revenue Overview</h2>
-        <div class="time-filter">
-          <button class="time-btn active" data-chart="revenue" data-range="7d">7 Days</button>
-          <button class="time-btn" data-chart="revenue" data-range="1m">1 Month</button>
-          <button class="time-btn" data-chart="revenue" data-range="3m">3 Months</button>
-          <button class="time-btn" data-chart="revenue" data-range="1y">1 Year</button>
-        </div>
-      </div>
-
-      <div class="time-period-stats">
-        <div class="time-stat">
-          <div class="time-stat-label">7 Days</div>
-          <div class="time-stat-value" id="seven-day-revenue">Loading...</div>
-        </div>
-        <div class="time-stat">
-          <div class="time-stat-label">1 Month</div>
-          <div class="time-stat-value" id="one-month-revenue">Loading...</div>
-        </div>
-        <div class="time-stat">
-          <div class="time-stat-label">All Time</div>
-          <div class="time-stat-value" id="all-time-revenue">Loading...</div>
-        </div>
-      </div>
-
-      <div class="metrics">
-        <div class="metric">
-          <span class="metric-label">Average Daily</span>
-          <span class="metric-value" id="average-daily">Loading...</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">7-Day Average</span>
-          <span class="metric-value" id="seven-day-average">Loading...</span>
-        </div>
-        <div class="metric">
-          <span class="metric-label">Daily Growth</span>
-          <span class="metric-value" id="daily-growth">Loading...</span>
-          <div class="growth positive">
-            <span class="growth-icon" id="growth-direction">↑</span>
-            <span>from previous day</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="chart-container">
-        <canvas id="revenueChart"></canvas>
-      </div>
-    </div>
-
-    <!-- Two Column Layout for User Activity and Wallet Revenue -->
-    <div class="two-column">
-      <!-- User Activity Section -->
-      <div class="section">
-        <div class="section-header">
-          <h2>User Activity</h2>
-          <div class="time-filter">
-            <button class="time-btn active" data-chart="activity" data-range="7d">7 Days</button>
-            <button class="time-btn" data-chart="activity" data-range="1m">1 Month</button>
-            <button class="time-btn" data-chart="activity" data-range="3m">3 Months</button>
-          </div>
-        </div>
-
-        <div class="metrics">
-          <div class="metric">
-            <span class="metric-label">New Users (30d)</span>
-            <span class="metric-value" id="new-users">Loading...</span>
-          </div>
-          <div class="metric">
-            <span class="metric-label">Retention Rate</span>
-            <span class="metric-value" id="retention-rate">Loading...</span>
-          </div>
-        </div>
-
-        <div class="chart-container">
-          <canvas id="activityChart"></canvas>
-        </div>
-      </div>
-
-      <!-- Wallet Revenue Section -->
-      <div class="section">
-        <div class="section-header">
-          <h2>Top Wallets by Revenue</h2>
-        </div>
-        
-        <table class="wallet-table">
-          <thead>
-            <tr>
-              <th>Wallet</th>
-              <th>SOL</th>
-              <th>USDC</th>
-              <th>USD Value</th>
-              <th>Share</th>
-            </tr>
-          </thead>
-          <tbody id="wallet-table-body">
-            <tr>
-              <td colspan="5" style="text-align: center; color: #aaa;">Loading wallet data...</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <footer>
-      <p>© <span id="current-year">2025</span> TunaIQ. All rights reserved.</p>
-    </footer>
-
-    <script src="script.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DeFi Tuna Analytics Dashboard</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background-color: #0a0e17;
+      color: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      padding: 20px;
+      text-align: center;
+    }
+    .logo {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    p {
+      margin-bottom: 30px;
+      color: #94a3b8;
+      max-width: 600px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #00e4ff;
+      color: #0a0e17;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #00c4ff;
+      transform: translateY(-2px);
+    }
+    .loading {
+      display: inline-block;
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(0, 228, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #00e4ff;
+      animation: spin 1s ease-in-out infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="logo">🐟</div>
+  <h1>DeFi Tuna Analytics Dashboard</h1>
+  <p>We're currently experiencing technical difficulties with our dashboard. Our team is working to resolve this issue as quickly as possible.</p>
+  
+  <div class="loading"></div>
+  
+  <p>In the meantime, you can try accessing the dashboard directly:</p>
+  
+  <a href="https://tuna-analytics.vercel.app" class="button">Access Dashboard</a>
+  
+  <p style="margin-top: 40px; font-size: 14px;">If you continue to experience issues, please contact our support team.</p>
+</body>
 </html>

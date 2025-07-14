@@ -5,13 +5,15 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "export": "next export",
     "start": "NODE_ENV=production node server.js",
     "lint": "next lint",
     "clean": "rimraf .next node_modules/.cache",
     "rebuild": "npm run clean && npm run build",
     "force-rebuild": "npm run clean && rm -rf node_modules && npm install && npm run build",
     "type-check": "tsc --noEmit",
-    "postinstall": "node create-fix-swc-script.js && node ./scripts/fix-swc.js"
+    "postinstall": "node create-fix-swc-script.js && node ./scripts/fix-swc.js",
+    "static-build": "next build && next export"
   },
   "dependencies": {
     "@solana/web3.js": "^1.78.0",

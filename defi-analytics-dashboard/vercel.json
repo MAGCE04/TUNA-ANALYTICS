@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "chmod +x vercel-deploy.sh && ./vercel-deploy.sh && next build",
+  "buildCommand": "npm run build",
   "devCommand": "npm run dev",
   "installCommand": "npm install",
   "framework": "nextjs",

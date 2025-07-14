@@ -28,6 +28,22 @@
     p {
       margin-bottom: 30px;
       color: #94a3b8;
+      max-width: 600px;
+    }
+    .button {
+      display: inline-block;
+      background-color: #00e4ff;
+      color: #0a0e17;
+      padding: 12px 24px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+    .button:hover {
+      background-color: #00c4ff;
+      transform: translateY(-2px);
     }
     .loading {
       display: inline-block;
@@ -46,11 +62,14 @@
 <body>
   <div class="logo">🐟</div>
   <h1>DeFi Tuna Analytics Dashboard</h1>
-  <p>Loading the dashboard...</p>
+  <p>Welcome to the DeFi Tuna Analytics Dashboard. This is a static fallback page.</p>
+  
   <div class="loading"></div>
-  <script>
-    // Redirect to the Next.js app
-    window.location.href = '/';
-  </script>
+  
+  <p>Please click the button below to access the dashboard:</p>
+  
+  <a href="/" class="button">Access Dashboard</a>
+  
+  <p style="margin-top: 40px; font-size: 14px;">If you continue to experience issues, please contact our support team.</p>
 </body>
 </html>

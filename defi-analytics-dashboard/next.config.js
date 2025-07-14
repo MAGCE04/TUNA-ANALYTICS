@@ -132,6 +132,6 @@ const nextConfig = {
   },
   // Disable strict mode for production
   reactStrictMode: process.env.NODE_ENV !== 'production',
-};
-
-module.exports = nextConfig;
+  // Enable static exports
+  distDir: 'build',
+}

@@ -1,8 +1,6 @@
 #!/bin/bash
 
 echo "🔧 Making scripts executable..."
-chmod +x rebuild.sh
-chmod +x fix-typescript.sh
-chmod +x fix-404.sh
+chmod +x create-static-solution.sh
 
 echo "✅ Scripts are now executable!"
