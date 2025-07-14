@@ -1,5 +1,10 @@
 #!/bin/bash
 
+echo "🔍 Checking for 404 issues..."
+
+# Create public directory if it doesn't exist
+mkdir -p public
+
 # Create a 404.html file that redirects to index.html
 echo "Creating 404.html with redirect to index.html..."
 
@@ -65,6 +70,7 @@ cat > ./public/index.html << 'EOL'
       }
     })();
   </script>
+  <meta http-equiv="refresh" content="0;url=/" />
 </head>
 <body>
   <div id="root"></div>
@@ -76,4 +82,4 @@ cat > ./public/index.html << 'EOL'
 </html>
 EOL
 
-echo "404 handling files created successfully!"
+echo "✅ 404 handling files created successfully!"

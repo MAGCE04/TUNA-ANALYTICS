@@ -83,6 +83,31 @@ const nextConfig = {
     // Improve client-side navigation
     scrollRestoration: true,
   },
+  // Ensure trailing slashes are handled correctly
+  trailingSlash: false,
+  // Custom 404 page
+  async rewrites() {
+    return [
+      {
+        source: '/:path*',
+        destination: '/:path*',
+      },
+      {
+        source: '/404',
+        destination: '/404.html',
+      },
+    ];
+  },
+  // Redirect all paths to the app directory
+  async redirects() {
+    return [
+      {
+        source: '/index.html',
+        destination: '/',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 module.exports = nextConfig;

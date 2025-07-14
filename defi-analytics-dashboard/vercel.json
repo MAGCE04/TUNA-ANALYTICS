@@ -36,6 +36,10 @@
   "routes": [
     { "handle": "filesystem" },
     { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/_next/(.*)", "dest": "/_next/$1" },
+    { "src": "/static/(.*)", "dest": "/static/$1" },
+    { "src": "/favicon.ico", "dest": "/favicon.ico" },
+    { "src": "/robots.txt", "dest": "/robots.txt" },
     { "src": "/(.*)", "dest": "/" }
   ]
 }
