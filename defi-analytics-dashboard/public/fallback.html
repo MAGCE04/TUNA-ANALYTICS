@@ -41,21 +41,6 @@
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .button {
-      display: inline-block;
-      background-color: #00e4ff;
-      color: #0a0e17;
-      padding: 12px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: bold;
-      transition: all 0.3s ease;
-      margin-top: 20px;
-    }
-    .button:hover {
-      background-color: #00c4ff;
-      transform: translateY(-2px);
-    }
   </style>
 </head>
 <body>
@@ -63,12 +48,9 @@
   <h1>DeFi Tuna Analytics Dashboard</h1>
   <p>Loading the dashboard...</p>
   <div class="loading"></div>
-  <a href="/" class="button">Go to Dashboard</a>
   <script>
     // Redirect to the Next.js app
-    setTimeout(function() {
-      window.location.href = '/';
-    }, 1000);
+    window.location.href = '/';
   </script>
 </body>
 </html>

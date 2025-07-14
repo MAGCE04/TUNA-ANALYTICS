@@ -85,19 +85,6 @@ const nextConfig = {
   },
   // Ensure trailing slashes are handled correctly
   trailingSlash: false,
-  // Custom 404 page
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        destination: '/:path*',
-      },
-      {
-        source: '/404',
-        destination: '/404.html',
-      },
-    ];
-  },
   // Redirect all paths to the app directory
   async redirects() {
     return [
@@ -108,6 +95,43 @@ const nextConfig = {
       },
     ];
   },
+  // Handle all routes with the app directory
+  async rewrites() {
+    return {
+      beforeFiles: [
+        // These rewrites are checked before pages/public files
+        // are checked
+        {
+          source: '/:path*',
+          has: [
+            {
+              type: 'header',
+              key: 'x-vercel-deployment-url',
+            },
+          ],
+          destination: '/:path*',
+        },
+      ],
+      afterFiles: [
+        // These rewrites are checked after pages/public files
+        // are checked but before dynamic routes
+        {
+          source: '/:path*',
+          destination: '/',
+        },
+      ],
+      fallback: [
+        // These rewrites are checked after both pages/public files
+        // and dynamic routes are checked
+        {
+          source: '/:path*',
+          destination: '/',
+        },
+      ],
+    };
+  },
+  // Disable strict mode for production
+  reactStrictMode: process.env.NODE_ENV !== 'production',
 };
 
 module.exports = nextConfig;
