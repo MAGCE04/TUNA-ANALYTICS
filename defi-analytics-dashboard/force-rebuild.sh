@@ -1,14 +1,39 @@
 #!/bin/bash
 
-echo "🧹 Cleaning build artifacts..."
+# Force clean rebuild script for Next.js application
+
+echo "===== STARTING CLEAN REBUILD PROCESS ====="
+
+# Stop any running processes
+echo "Stopping any running processes..."
+pkill -f "node" || true
+
+# Remove all build artifacts and caches
+echo "Removing build artifacts and caches..."
 rm -rf .next
 rm -rf node_modules/.cache
+rm -rf out
+rm -rf .vercel/output
 
-echo "🔄 Running fix scripts..."
-./fix-typescript.sh
-./fix-404.sh
+# Remove any conflicting files
+echo "Removing any conflicting files..."
+rm -f index.html
+rm -f vite.config.js
+rm -rf src
 
-echo "🏗️ Rebuilding the application..."
-npm run build
+# Clean npm cache
+echo "Cleaning npm cache..."
+npm cache clean --force
 
-echo "✅ Build completed successfully!"
+# Reinstall dependencies
+echo "Reinstalling dependencies..."
+rm -rf node_modules
+npm install
+
+# Build the application
+echo "Building the application..."
+NODE_ENV=production npm run build
+
+echo "===== REBUILD COMPLETE ====="
+echo "You can now deploy the application with:"
+echo "npm run start"

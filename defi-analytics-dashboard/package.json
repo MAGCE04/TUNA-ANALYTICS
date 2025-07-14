@@ -1,31 +1,51 @@
 {
-  "name": "defi-tuna-analytics",
-  "version": "1.0.0",
+  "name": "defi-analytics-dashboard",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "rmdir /s /q .next && next build",
     "start": "next start",
     "lint": "next lint",
-    "fix-swc": "chmod +x fix-swc.sh && ./fix-swc.sh"
+    "clean": "rmdir /s /q .next node_modules/.cache",
+    "rebuild": "npm run clean && npm run build",
+    "force-rebuild": "bash force-rebuild.sh"
   },
   "dependencies": {
-    "next": "13.4.12",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "@solana/web3.js": "^1.78.0",
+    "@types/react-dom": "18.2.7",
+    "autoprefixer": "10.4.14",
     "axios": "^1.4.0",
     "chart.js": "^4.3.0",
     "date-fns": "^2.30.0",
+    "eslint": "8.46.0",
+    "eslint-config-next": "13.4.12",
+    "next": "^13.5.11",
+    "node-cron": "^3.0.2",
+    "postcss": "8.4.27",
+    "react": "^18.3.1",
     "react-chartjs-2": "^5.2.0",
+    "react-datepicker": "^4.16.0",
+    "react-dom": "^18.3.1",
+    "react-icons": "^4.10.1",
     "recharts": "^2.7.2",
-    "swr": "^2.2.0"
+    "serve": "^14.2.1",
+    "swr": "^2.2.0",
+    "tailwindcss": "3.3.3"
   },
   "devDependencies": {
-    "@types/node": "20.4.5",
-    "@types/react": "18.2.17",
-    "autoprefixer": "10.4.14",
-    "postcss": "8.4.27",
-    "tailwindcss": "3.3.3",
-    "typescript": "5.1.6"
-  }
+    "@types/node": "^24.0.13",
+    "@types/node-cron": "^3.0.8",
+    "@types/react": "^19.1.8",
+    "@types/react-datepicker": "^4.11.2",
+    "typescript": "^5.8.3"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "main": "next.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }

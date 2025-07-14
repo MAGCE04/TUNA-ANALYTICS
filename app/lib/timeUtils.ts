@@ -1,5 +1,4 @@
-// Define TimeRange type locally since there's no types directory
-type TimeRange = '7d' | '30d' | '90d' | 'all';
+import { TimeRange } from '../types';
 
 /**
  * Filters data based on the selected time range

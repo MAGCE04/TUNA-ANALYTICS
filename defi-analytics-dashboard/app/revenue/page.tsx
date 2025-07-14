@@ -4,12 +4,11 @@ import { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { useRevenueData } from '../hooks/useRevenueData';
 import { formatCurrency, formatPercentage } from '../lib/utils';
-import { RevenueData, TimeRange } from '../types';
+import { RevenueData } from '../types';
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
-import TimeRangeSelector from '../components/TimeRangeSelector';
 
 export default function RevenuePage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | 'all'>('7d');
   const {
     revenueData,
     metrics,
@@ -19,17 +18,9 @@ export default function RevenuePage() {
 
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  // Update lastUpdated whenever revenueData changes
   useEffect(() => {
     setLastUpdated(new Date());
-    console.log(`Revenue data updated at ${new Date().toISOString()}`);
   }, [revenueData]);
-
-  // Handle time range change
-  const handleTimeRangeChange = (newRange: TimeRange) => {
-    console.log(`Setting time range to: ${newRange}`);
-    setTimeRange(newRange);
-  };
 
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
@@ -79,11 +70,16 @@ export default function RevenuePage() {
           </p>
         </div>
         <div className="mt-4 md:mt-0">
-          {/* Use the TimeRangeSelector component instead of a select */}
-          <TimeRangeSelector 
-            selectedRange={timeRange} 
-            onChange={handleTimeRangeChange} 
-          />
+          <select
+            className="select bg-card border border-gray-300 p-2 rounded-md"
+            value={timeRange}
+            onChange={(e) => setTimeRange(e.target.value as any)}
+          >
+            <option value="7d">Last 7 days</option>
+            <option value="30d">Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+            <option value="all">All time</option>
+          </select>
         </div>
       </div>
 

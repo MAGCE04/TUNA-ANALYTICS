@@ -1,99 +1,59 @@
-# Troubleshooting Guide
+# How to Fix the Frontend Update Issue
 
-This document provides solutions for common issues you might encounter when working with the DeFi Tuna Analytics Dashboard.
+Follow these steps to resolve the issue with the frontend not updating:
 
-## 404 Page Not Found Errors
+## 1. Delete the conflicting layout.js file
 
-If you're experiencing 404 errors:
+The presence of both `layout.js` and `layout.tsx` is causing conflicts. I've already deleted the `layout.js` file for you.
 
-1. **Check your URL path**: Ensure you're using a valid route defined in the application.
+## 2. Clear Next.js cache
 
-2. **Clear browser cache**: Sometimes browsers cache old routing information.
+Next.js caches aggressively, which can prevent updates from appearing. Run these commands:
 
-3. **Rebuild the application**:
-   ```bash
-   npm run rebuild
-   ```
+```bash
+# Navigate to your project directory
+cd /home/magce7564/DEFITUNA2/defi-analytics-dashboard
 
-4. **Check for deployment issues**: If deployed on Vercel, check the deployment logs for any routing errors.
+# Remove the .next cache directory
+rm -rf .next
 
-## Build Errors
+# Remove node_modules cache
+rm -rf node_modules/.cache
+```
 
-If you encounter build errors:
+## 3. Rebuild and restart the application
 
-1. **Clear Next.js cache**:
-   ```bash
-   npm run clean
-   ```
+```bash
+# Make the rebuild script executable
+chmod +x rebuild.sh
 
-2. **Update dependencies**:
-   ```bash
-   npm update
-   ```
+# Run the rebuild script
+./rebuild.sh
+```
 
-3. **Force a complete rebuild**:
-   ```bash
-   npm run force-rebuild
-   ```
+## 4. If using development server
 
-## TypeScript Errors
+If you're using the development server instead of a production build:
 
-For TypeScript-related issues:
+```bash
+# Stop any running Next.js processes
+# Then start the development server with cache disabled
+npm run dev
+```
 
-1. **Run type checking**:
-   ```bash
-   npm run type-check
-   ```
+## 5. Hard refresh your browser
 
-2. **Update TypeScript definitions**:
-   ```bash
-   npm install --save-dev @types/react @types/node
-   ```
+Once the server is running again, do a hard refresh in your browser:
+- Chrome/Firefox: Ctrl+Shift+R or Cmd+Shift+R (Mac)
+- Or clear your browser cache completely
 
-3. **Check for incompatible types**: Ensure your component props match their TypeScript interfaces.
+## Additional Troubleshooting
 
-## Data Not Loading
+If the issue persists:
 
-If data isn't loading properly:
+1. Check if you're viewing the correct URL (make sure you're not on a cached version)
+2. Verify that the server is actually running the updated code
+3. Try a different browser to rule out browser-specific caching issues
+4. Check the browser console for any errors that might be preventing the page from rendering correctly
 
-1. **Check API routes**: Ensure the API routes are working correctly.
-
-2. **Verify network requests**: Use browser developer tools to check for network errors.
-
-3. **Check SWR cache**: Try using the `revalidate` function from SWR to refresh data.
-
-## Styling Issues
-
-For styling problems:
-
-1. **Rebuild Tailwind CSS**:
-   ```bash
-   npx tailwindcss build -i styles/globals.css -o public/styles.css
-   ```
-
-2. **Check for conflicting styles**: Look for CSS conflicts in your components.
-
-3. **Verify class names**: Ensure you're using the correct Tailwind class names.
-
-## Deployment Issues
-
-For deployment problems:
-
-1. **Check environment variables**: Ensure all required environment variables are set.
-
-2. **Verify build output**: Check the build logs for any errors.
-
-3. **Test locally first**: Always test your changes locally before deploying.
-
-## Still Having Issues?
-
-If you're still experiencing problems:
-
-1. Check the project's GitHub issues to see if others have encountered the same problem.
-
-2. Create a new issue with detailed information about the problem, including:
-   - Steps to reproduce
-   - Expected behavior
-   - Actual behavior
-   - Screenshots or error logs
-   - Environment details (browser, OS, Node.js version)
+The changes should now be visible in your application.

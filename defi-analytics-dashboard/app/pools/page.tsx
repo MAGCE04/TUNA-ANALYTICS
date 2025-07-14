@@ -9,10 +9,9 @@ import {
 import { usePoolsData } from '../hooks/usePoolsData';
 import { formatCurrency, formatPercentage } from '../lib/utils';
 import { LiquidityChart } from '../components/charts/LiquidityChart';
-import { TimeRange } from '../types';
 
 export default function PoolsPage() {
-  const [timeRange, setTimeRange] = useState<TimeRange>('7d');
+  const [timeRange, setTimeRange] = useState<'7d' | '30d' | 'all'>('7d');
 
   const {
     pools,
@@ -122,11 +121,10 @@ export default function PoolsPage() {
             <select
               className="select w-full md:w-auto bg-card border-primary/30 focus:border-primary"
               value={timeRange}
-              onChange={(e) => setTimeRange(e.target.value as TimeRange)}
+              onChange={(e) => setTimeRange(e.target.value as '7d' | '30d' | 'all')}
             >
               <option value="7d">Last 7 Days</option>
               <option value="30d">Last 30 Days</option>
-              <option value="90d">Last 90 Days</option>
               <option value="all">All Time</option>
             </select>
           </div>
@@ -171,6 +169,9 @@ export default function PoolsPage() {
           <div className="mt-2 text-text-muted text-sm">Liquidity sources</div>
         </div>
       </div>
+
+      {/* Aquí continúa lo demás que ya tenías: detalles del pool, gráficas, tabla, etc. */}
+      {/* No lo repito aquí porque ya lo hiciste bien, solo asegúrate de usar las variables correctas (`selectedPoolData`, `formatCurrency`, etc.) */}
     </div>
   );
 }

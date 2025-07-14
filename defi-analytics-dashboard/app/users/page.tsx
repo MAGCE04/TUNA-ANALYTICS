@@ -9,7 +9,6 @@ import {
 import { useUserActivityData } from '../hooks/useUserActivityData';
 import { formatPercentage } from '../lib/utils';
 import { UserGrowthChart } from '../components/charts/UserGrowthChart';
-import { TimeRange } from '../types';
 
 export default function UsersPage() {
   const {
@@ -52,17 +51,6 @@ export default function UsersPage() {
     { name: 'Returning Users', value: userActivity.reduce((sum, day) => sum + day.returningUsers, 0) },
   ];
 
-  // Map display names for time ranges
-  const timeRangeDisplayNames: Record<TimeRange, string> = {
-    '7d': '7 Days',
-    '30d': '30 Days',
-    '90d': '90 Days',
-    'all': 'All Time'
-  };
-
-  // Available time ranges that match our TimeRange type
-  const availableTimeRanges: TimeRange[] = ['7d', '30d', '90d', 'all'];
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Page Header */}
@@ -76,13 +64,13 @@ export default function UsersPage() {
       {/* Time Range Selector */}
       <div className="mb-8">
         <div className="flex flex-wrap gap-2">
-          {availableTimeRanges.map((range) => (
+          {(['day', 'week', 'month', 'year', 'all'] as const).map((range) => (
             <button
               key={range}
               className={`btn text-sm ${timeRange === range ? 'btn-primary' : 'btn-outline'}`}
               onClick={() => setTimeRange(range)}
             >
-              {timeRangeDisplayNames[range]}
+              {range.charAt(0).toUpperCase() + range.slice(1)}
             </button>
           ))}
         </div>

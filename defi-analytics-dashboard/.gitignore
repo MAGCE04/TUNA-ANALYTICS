@@ -33,6 +33,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# IDE
-.idea
-.vscode
+# vite
+/src
+index.html
+vite.config.js

@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import { useRevenueData } from './hooks/useRevenueData';
 import { formatCurrency, formatPercentage, formatSol, formatUsdc } from './lib/utils';
 import Link from 'next/link';
-// Removed TimeRangeSelector import
+import TimeRangeSelector from './components/TimeRangeSelector';
 import { useUserActivityData } from './hooks/useUserActivityData';
 import { useTopWalletsData } from './hooks/useTopWalletsData';
 import { useLimitOrdersData } from './hooks/useLimitOrdersData';
@@ -15,23 +15,18 @@ import { UserGrowthChart } from './components/charts/UserGrowthChart';
 import { RevenueChart } from './components/charts/RevenueChart';
 import { ActivityChart } from './components/charts/ActivityChart';
 import { LiquidityChart } from './components/charts/LiquidityChart';
-import { TradingVolumeChart } from './components/charts/TradingVolumeChart';
-import { AssetAllocationChart } from './components/charts/AssetAllocationChart';
-import { ProtocolPerformanceChart } from './components/charts/ProtocolPerformanceChart';
-import { useProtocolStatus } from './hooks/useProtocolStatus';
-import { TimeSpecificChart } from './components/charts/TimeSpecificChart';
 
 export default function NewDashboard() {
-  // Using a fixed time range for data fetching (30d as default)
-  const fixedTimeRange: TimeRange = '30d';
+  // State for time range selector
+  const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('30d');
   
-  // Use our custom hooks with the fixed time range
+  // Use our custom hooks with the selected time range
   const {
     revenueData,
     metrics: revenueMetrics,
     loading: revenueLoading,
     error: revenueError
-  } = useRevenueData(fixedTimeRange);
+  } = useRevenueData(selectedTimeRange);
   
   const {
     userActivity,
@@ -44,14 +39,14 @@ export default function NewDashboard() {
     topWallets,
     loading: walletsLoading,
     error: walletsError
-  } = useTopWalletsData(fixedTimeRange);
+  } = useTopWalletsData(selectedTimeRange);
   
   const {
     orders,
     stats: orderStats,
     loading: ordersLoading,
     error: ordersError
-  } = useLimitOrdersData(fixedTimeRange);
+  } = useLimitOrdersData(selectedTimeRange);
   
   const {
     pools,
@@ -60,13 +55,7 @@ export default function NewDashboard() {
     avgUtilizationRate,
     loading: poolsLoading,
     error: poolsError
-  } = usePoolsData(fixedTimeRange);
-
-  const {
-    status: protocolStatus,
-    loading: protocolStatusLoading,
-    error: protocolStatusError
-  } = useProtocolStatus();
+  } = usePoolsData(selectedTimeRange);
 
   // Animation state
   const [animate, setAnimate] = useState(false);
@@ -77,10 +66,10 @@ export default function NewDashboard() {
   }, []);
 
   // Check if any data is loading
-  const isLoading = revenueLoading || userLoading || walletsLoading || ordersLoading || poolsLoading || protocolStatusLoading;
+  const isLoading = revenueLoading || userLoading || walletsLoading || ordersLoading || poolsLoading;
 
   // Check for errors
-  const error = revenueError || userError || walletsError || ordersError || poolsError || protocolStatusError;
+  const error = revenueError || userError || walletsError || ordersError || poolsError;
 
   if (isLoading) {
     return (
@@ -141,120 +130,13 @@ export default function NewDashboard() {
             </p>
           </div>
           
-          {/* Removed TimeRangeSelector */}
-        </div>
-      </div>
-
-      {/* Protocol Overview Boxes */}
-      <div className="mb-10">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <span className="text-primary text-xl mr-2">📊</span> Protocol Overview
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Overview Box 1: Protocol Status */}
-          <div className="card bg-gradient-to-br from-primary/20 to-primary/5 border border-primary/20">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center mr-4">
-                <span className="text-2xl">⏱️</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Protocol Status</h3>
-                <p className="text-sm text-text-muted">Operational since {format(protocolStatus.startDate, 'MMM d, yyyy')}</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Status</span>
-                <span className="font-bold flex items-center">
-                  <span className="w-2 h-2 rounded-full bg-success mr-2 animate-pulse"></span>
-                  Active
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Uptime</span>
-                <span className="font-bold">{protocolStatus.uptime} days</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Last Update</span>
-                <span className="font-bold">{format(protocolStatus.lastUpdate, 'MMM d, HH:mm')}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Overview Box 2: Key Metrics */}
-          <div className="card bg-gradient-to-br from-blue-500/20 to-blue-500/5 border border-blue-500/20">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-blue-500/20 flex items-center justify-center mr-4">
-                <span className="text-2xl">📈</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Key Metrics</h3>
-                <p className="text-sm text-text-muted">Current performance indicators</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Total TVL</span>
-                <span className="font-bold">{formatCurrency(totalTVL || 0)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Daily Volume</span>
-                <span className="font-bold">{formatCurrency(totalVolume ? totalVolume / 30 : 0)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Active Users</span>
-                <span className="font-bold">{userMetrics?.dau.toLocaleString() || 0}</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Overview Box 3: Growth Indicators */}
-          <div className="card bg-gradient-to-br from-purple-500/20 to-purple-500/5 border border-purple-500/20">
-            <div className="flex items-center mb-4">
-              <div className="w-12 h-12 rounded-full bg-purple-500/20 flex items-center justify-center mr-4">
-                <span className="text-2xl">🚀</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold">Growth Indicators</h3>
-                <p className="text-sm text-text-muted">Period-over-period changes</p>
-              </div>
-            </div>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Revenue Growth</span>
-                <span className={`font-bold ${growthClass}`}>
-                  {growthTrend} {formatPercentage(Math.abs(revenueGrowth))}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">User Growth</span>
-                <span className="font-bold text-success">
-                  📈 {formatPercentage(userMetrics?.growthRate || 0)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Retention Rate</span>
-                <span className="font-bold">{formatPercentage(userMetrics?.retentionRate || 0)}</span>
-              </div>
-            </div>
+          <div className="mt-4 md:mt-0">
+            <TimeRangeSelector 
+              selectedRange={selectedTimeRange} 
+              onChange={setSelectedTimeRange} 
+            />
           </div>
         </div>
-      </div>
-
-      {/* NEW SECTION: Time-specific Charts */}
-      <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <span className="text-primary text-xl mr-2">⏰</span> Time-Based Revenue Analysis
-        </h2>
-        
-        {/* 7-day Chart */}
-        <TimeSpecificChart timeRange="7d" title="Last 7 Days Revenue" />
-        
-        {/* 30-day Chart */}
-        <TimeSpecificChart timeRange="30d" title="Last 30 Days Revenue" />
-        
-        {/* 90-day Chart */}
-        <TimeSpecificChart timeRange="90d" title="Last 90 Days Revenue" />
       </div>
 
       {/* SECTION 1: USER OVERVIEW */}
@@ -387,7 +269,7 @@ export default function NewDashboard() {
       </div>
 
       {/* SECTION 4: LIQUIDITY OVERVIEW */}
-      <div className="mb-10 border-b border-border pb-6">
+      <div className="mb-10">
         <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
           <span className="text-primary text-xl mr-2">💎</span> Liquidity Overview
         </h2>
@@ -424,129 +306,6 @@ export default function NewDashboard() {
             <h3 className="text-lg font-bold mb-4">Asset Distribution</h3>
             <div className="h-64">
               <LiquidityChart />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 5: TRADING VOLUME */}
-      <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <span className="text-primary text-xl mr-2">📉</span> Trading Volume
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="card">
-            <h3 className="text-lg font-bold mb-4">Trading Metrics</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Total Trading Volume</span>
-                <span className="font-bold">{formatCurrency(totalVolume || 0)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Daily Avg. Volume</span>
-                <span className="font-bold">{formatCurrency(totalVolume ? totalVolume / 30 : 0)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Largest Trade</span>
-                <span className="font-bold">{formatCurrency(orderStats?.averageOrderSize ? orderStats.averageOrderSize * 5 : 0)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Trade Count</span>
-                <span className="font-bold">{tradingEvents.toLocaleString()}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Avg. Trade Size</span>
-                <span className="font-bold">{formatCurrency(orderStats?.averageOrderSize || 0)}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-bold mb-4">Trading Volume Trend</h3>
-            <div className="h-64">
-              <TradingVolumeChart />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 6: ASSET ALLOCATION */}
-      <div className="mb-10 border-b border-border pb-6">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <span className="text-primary text-xl mr-2">🔄</span> Asset Allocation
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="card">
-            <h3 className="text-lg font-bold mb-4">Asset Metrics</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Total Assets Tracked</span>
-                <span className="font-bold">{(pools?.length || 0) + 2}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Most Popular Asset</span>
-                <span className="font-bold">SOL</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Highest APY Asset</span>
-                <span className="font-bold">BTC (6.8%)</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Stablecoin Ratio</span>
-                <span className="font-bold">{formatPercentage(30)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Asset Diversity Score</span>
-                <span className="font-bold">7.5/10</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-bold mb-4">Asset Distribution</h3>
-            <div className="h-64">
-              <AssetAllocationChart />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* SECTION 7: PROTOCOL PERFORMANCE */}
-      <div className="mb-10">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <span className="text-primary text-xl mr-2">⚡</span> Protocol Performance
-        </h2>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="card">
-            <h3 className="text-lg font-bold mb-4">Performance Metrics</h3>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Protocol Age</span>
-                <span className="font-bold">{protocolStatus.uptime} days</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Current APY (Avg)</span>
-                <span className="font-bold">{formatPercentage(6.8)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">TVL Growth Rate</span>
-                <span className="font-bold text-success">📈 {formatPercentage(15.3)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Revenue per TVL</span>
-                <span className="font-bold">{formatPercentage((revenueMetrics?.totalRevenue || 0) / (totalTVL || 1) * 100)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-text-muted">Protocol Health Score</span>
-                <span className="font-bold">8.7/10</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="lg:col-span-2 card">
-            <h3 className="text-lg font-bold mb-4">Performance Trend</h3>
-            <div className="h-64">
-              <ProtocolPerformanceChart />
             </div>
           </div>
         </div>

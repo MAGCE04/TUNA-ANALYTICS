@@ -1,21 +1,30 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false,
+  reactStrictMode: true,
   swcMinify: true,
+  experimental: {
+    appDir: true,
+  },
+  // Ensure we're not using stale cache
+  generateEtags: false,
+  // Disable image optimization to prevent caching issues
   images: {
     unoptimized: true,
   },
-  // Disable TypeScript and ESLint errors during builds
-  typescript: {
-    ignoreBuildErrors: true,
+  // Add headers to prevent caching
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-store, max-age=0',
+          },
+        ],
+      },
+    ];
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
-  // Ensure trailing slashes are handled correctly
-  trailingSlash: false,
-  // Disable strict mode for production
-  reactStrictMode: process.env.NODE_ENV !== 'production',
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
