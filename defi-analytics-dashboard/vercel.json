@@ -1,9 +1,10 @@
 {
   "version": 2,
+  "buildCommand": "npm run fix-swc && npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
   "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/"
-    }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/" }
   ]
 }

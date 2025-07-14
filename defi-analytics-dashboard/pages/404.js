@@ -1,39 +1,30 @@
-import { useEffect } from 'react';
+import React from 'react';
+import Link from 'next/link';
+import Head from 'next/head';
 
 export default function Custom404() {
-  useEffect(() => {
-    // Redirect to the home page after a short delay
-    const timer = setTimeout(() => {
-      window.location.href = '/';
-    }, 3000);
-    
-    return () => clearTimeout(timer);
-  }, []);
-
   return (
-    <div style={{ 
-      display: 'flex', 
-      justifyContent: 'center', 
-      alignItems: 'center', 
-      height: '100vh',
-      backgroundColor: '#0f172a',
-      color: '#e2e8f0',
-      textAlign: 'center',
-      padding: '20px'
-    }}>
-      <div>
-        <div style={{ 
-          fontSize: '5rem', 
-          fontWeight: 'bold', 
-          color: '#38bdf8', 
-          marginBottom: '1rem' 
-        }}>404</div>
-        <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>Page Not Found</h1>
-        <p style={{ marginBottom: '1.5rem', opacity: 0.8 }}>
-          Sorry, we couldn't find the page you're looking for. 
-          Redirecting to dashboard...
-        </p>
+    <div className="min-h-screen bg-background text-text flex flex-col items-center justify-center text-center px-4">
+      <Head>
+        <title>Page Not Found - DeFi Tuna Analytics</title>
+      </Head>
+      
+      <div className="w-24 h-24 relative mb-8">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-primary to-accent opacity-20 blur-md"></div>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-5xl">🐟</span>
+        </div>
       </div>
+      
+      <h1 className="text-4xl font-bold mb-4">Page Not Found</h1>
+      
+      <p className="text-text-muted max-w-md mb-8">
+        The page you're looking for doesn't exist or has been moved.
+      </p>
+      
+      <Link href="/" className="btn btn-primary">
+        Go to Dashboard
+      </Link>
     </div>
   );
 }
