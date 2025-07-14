@@ -19,7 +19,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^24.0.13",
-    "serve": "^14.2.1"
+    "@types/react": "19.1.8",
+    "serve": "^14.2.1",
+    "typescript": "5.8.3"
   },
   "dependencies": {
     "next": "^15.3.5",
@@ -27,4 +29,3 @@
     "react-dom": "^18.3.1"
   }
 }
-
