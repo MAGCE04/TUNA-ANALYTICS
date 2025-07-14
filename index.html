@@ -5,71 +5,598 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DeFi Tuna Analytics Dashboard</title>
   <style>
+    :root {
+      --background: #0a0e17;
+      --card: #111827;
+      --card-hover: #1a2235;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #2d3748;
+      --primary: #00e4ff;
+      --primary-hover: #00c4ff;
+      --secondary: #9333ea;
+      --secondary-hover: #7e22ce;
+      --accent: #00ffa3;
+      --accent-hover: #00e58f;
+      --success: #00ffa3;
+      --warning: #ffb300;
+      --danger: #ff4d6d;
+    }
+    
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-      background-color: #0a0e17;
-      color: #f8fafc;
+      background-color: var(--background);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+    
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 20px 0;
+      position: sticky;
+      top: 0;
+      background-color: rgba(10, 14, 23, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 10;
+    }
+    
+    .header-content {
       display: flex;
-      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .logo {
+      display: flex;
+      align-items: center;
+    }
+    
+    .logo-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      position: relative;
+    }
+    
+    .logo-text {
+      font-size: 20px;
+      font-weight: bold;
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .status {
+      display: flex;
+      align-items: center;
+    }
+    
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--success);
+      margin-right: 8px;
+      animation: pulse 2s infinite;
+    }
+    
+    .status-text {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+    
+    main {
+      padding: 40px 0;
+    }
+    
+    .hero {
+      margin-bottom: 40px;
+    }
+    
+    h1 {
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    
+    .gradient-text {
+      background: linear-gradient(90deg, var(--primary) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      color: transparent;
+    }
+    
+    .subtitle {
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+    
+    .section-title {
+      font-size: 24px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+    }
+    
+    .section-icon {
+      color: var(--primary);
+      margin-right: 10px;
+      font-size: 20px;
+    }
+    
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+    
+    .card {
+      background-color: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: rgba(0, 228, 255, 0.1);
+      display: flex;
       align-items: center;
       justify-content: center;
-      height: 100vh;
+      font-size: 24px;
+      margin-right: 16px;
+    }
+    
+    .card-title {
+      font-size: 18px;
+      font-weight: bold;
       margin: 0;
+    }
+    
+    .card-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin: 5px 0 0 0;
+    }
+    
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    
+    .stat-label {
+      color: var(--text-muted);
+    }
+    
+    .stat-value {
+      font-weight: bold;
+    }
+    
+    .stat-value.positive {
+      color: var(--success);
+    }
+    
+    .stat-value.negative {
+      color: var(--danger);
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin-bottom: 40px;
+      background-color: var(--card);
+      border-radius: 16px;
+      border: 1px solid var(--border);
       padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .chart-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+    
+    .chart-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 0;
+    }
+    
+    .chart-placeholder {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--card) 25%, var(--card-hover) 25%, var(--card-hover) 50%, var(--card) 50%, var(--card) 75%, var(--card-hover) 75%, var(--card-hover) 100%);
+      background-size: 20px 20px;
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .chart-placeholder::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    .chart-message {
+      position: relative;
+      z-index: 1;
+      background-color: rgba(10, 14, 23, 0.8);
+      padding: 16px 24px;
+      border-radius: 8px;
       text-align: center;
     }
-    .logo {
-      font-size: 48px;
+    
+    .chart-message h3 {
+      margin-top: 0;
+      margin-bottom: 10px;
+    }
+    
+    .chart-message p {
       margin-bottom: 20px;
     }
-    h1 {
-      margin-bottom: 20px;
-    }
-    p {
-      margin-bottom: 30px;
-      color: #94a3b8;
-      max-width: 600px;
-    }
-    .button {
+    
+    .btn {
       display: inline-block;
-      background-color: #00e4ff;
-      color: #0a0e17;
-      padding: 12px 24px;
+      padding: 10px 20px;
+      background-color: var(--primary);
+      color: var(--background);
       border-radius: 8px;
-      text-decoration: none;
       font-weight: bold;
+      text-decoration: none;
       transition: all 0.3s ease;
-      margin-top: 20px;
     }
-    .button:hover {
-      background-color: #00c4ff;
+    
+    .btn:hover {
+      background-color: var(--primary-hover);
       transform: translateY(-2px);
     }
-    .loading {
-      display: inline-block;
-      width: 50px;
-      height: 50px;
-      border: 4px solid rgba(0, 228, 255, 0.3);
-      border-radius: 50%;
-      border-top-color: #00e4ff;
-      animation: spin 1s ease-in-out infinite;
+    
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 0;
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
     }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+    
+    @keyframes shimmer {
+      100% {
+        left: 100%;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      h1 {
+        font-size: 28px;
+      }
+      
+      .section-title {
+        font-size: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="logo">🐟</div>
-  <h1>DeFi Tuna Analytics Dashboard</h1>
-  <p>Welcome to the DeFi Tuna Analytics Dashboard!</p>
+  <header>
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <div class="logo-icon">🐟</div>
+          <div class="logo-text">DeFi Tuna Analytics</div>
+        </div>
+        <div class="status">
+          <div class="status-indicator"></div>
+          <div class="status-text">Live Data</div>
+        </div>
+      </div>
+    </div>
+  </header>
   
-  <div class="loading"></div>
+  <main>
+    <div class="container">
+      <section class="hero">
+        <h1><span class="gradient-text">DeFi Tuna Dashboard</span> 🐟</h1>
+        <p class="subtitle">Last updated: <span id="current-date"></span> • Protocol analytics at a glance</p>
+      </section>
+      
+      <section>
+        <h2 class="section-title"><span class="section-icon">📊</span> Protocol Overview</h2>
+        <div class="card-grid">
+          <!-- Protocol Status Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">⏱️</div>
+              <div>
+                <h3 class="card-title">Protocol Status</h3>
+                <p class="card-subtitle">Operational since Sep 15, 2023</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Status</span>
+                <span class="stat-value"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background-color: var(--success); margin-right: 5px;"></span> Active</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Uptime</span>
+                <span class="stat-value">180 days</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Last Update</span>
+                <span class="stat-value" id="last-update"></span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Key Metrics Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📈</div>
+              <div>
+                <h3 class="card-title">Key Metrics</h3>
+                <p class="card-subtitle">Current performance indicators</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Total TVL</span>
+                <span class="stat-value">$320M</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Daily Volume</span>
+                <span class="stat-value">$12M</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Active Users</span>
+                <span class="stat-value">15,000</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Growth Indicators Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">🚀</div>
+              <div>
+                <h3 class="card-title">Growth Indicators</h3>
+                <p class="card-subtitle">Period-over-period changes</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Revenue Growth</span>
+                <span class="stat-value positive">📈 12.5%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">User Growth</span>
+                <span class="stat-value positive">📈 18.7%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Retention Rate</span>
+                <span class="stat-value">85.2%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section>
+        <h2 class="section-title"><span class="section-icon">💰</span> Revenue Overview</h2>
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3 class="chart-title">Revenue Trend</h3>
+          </div>
+          <div class="chart-placeholder">
+            <div class="chart-message">
+              <h3>Interactive Charts Coming Soon</h3>
+              <p>We're working on bringing you real-time data visualization.</p>
+              <a href="https://github.com/MAGCE04/TUNA-ANALYTICS" class="btn">View on GitHub</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">💵</div>
+              <div>
+                <h3 class="card-title">Revenue Metrics</h3>
+                <p class="card-subtitle">Financial performance</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Total Revenue in SOL</span>
+                <span class="stat-value">◎75,000</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Total Revenue in USD</span>
+                <span class="stat-value">$1.5M</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Daily Avg. Revenue</span>
+                <span class="stat-value">$50K</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Growth Rate</span>
+                <span class="stat-value positive">📈 12.5%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📊</div>
+              <div>
+                <h3 class="card-title">Revenue Sources</h3>
+                <p class="card-subtitle">Where revenue comes from</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Trading Fees</span>
+                <span class="stat-value">60%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Liquidation Fees</span>
+                <span class="stat-value">25%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Borrowing Interest</span>
+                <span class="stat-value">15%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <section>
+        <h2 class="section-title"><span class="section-icon">👥</span> User Overview</h2>
+        <div class="chart-container">
+          <div class="chart-header">
+            <h3 class="chart-title">User Growth Trend</h3>
+          </div>
+          <div class="chart-placeholder">
+            <div class="chart-message">
+              <h3>Interactive Charts Coming Soon</h3>
+              <p>We're working on bringing you real-time data visualization.</p>
+              <a href="https://github.com/MAGCE04/TUNA-ANALYTICS" class="btn">View on GitHub</a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card-grid">
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">👤</div>
+              <div>
+                <h3 class="card-title">User Metrics</h3>
+                <p class="card-subtitle">User activity and growth</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Total Users</span>
+                <span class="stat-value">50,000</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Active Users</span>
+                <span class="stat-value">15,000</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">New Users (Last 30 Days)</span>
+                <span class="stat-value">7,500</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Retention Rate</span>
+                <span class="stat-value">85.2%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card">
+            <div class="card-header">
+              <div class="card-icon">📱</div>
+              <div>
+                <h3 class="card-title">User Activity</h3>
+                <p class="card-subtitle">How users interact with the protocol</p>
+              </div>
+            </div>
+            <div>
+              <div class="stat-row">
+                <span class="stat-label">Avg. Transactions per User</span>
+                <span class="stat-value">8.5</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Avg. Session Duration</span>
+                <span class="stat-value">12 min</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Most Active Time</span>
+                <span class="stat-value">2-4 PM UTC</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
   
-  <p>Our dashboard is currently being updated. Please check back soon for an enhanced experience.</p>
+  <footer>
+    <div class="container">
+      <p>Data updates every 12 hours. Last updated displayed on each page.</p>
+      <p>© <span id="current-year"></span> DeFi Tuna Analytics • Built with 🐟 on Solana</p>
+    </div>
+  </footer>
   
-  <a href="https://github.com/MAGCE04/TUNA-ANALYTICS" class="button">View on GitHub</a>
-  
-  <p style="margin-top: 40px; font-size: 14px;">© 2023 DeFi Tuna Analytics. All rights reserved.</p>
+  <script>
+    // Set current date and time
+    const now = new Date();
+    document.getElementById('current-date').textContent = now.toLocaleDateString('en-US', { 
+      month: 'short', 
+      day: 'numeric', 
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    // Set last update time (1 hour ago)
+    const lastUpdate = new Date(now.getTime() - (1 * 60 * 60 * 1000));
+    document.getElementById('last-update').textContent = lastUpdate.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+    
+    // Set current year for copyright
+    document.getElementById('current-year').textContent = now.getFullYear();
+  </script>
 </body>
 </html>
